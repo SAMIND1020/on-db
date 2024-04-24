@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.dropdown-btn:hover .dropdown-content {
+    display: block;
+}
+
+.leaflet-container {
+    height: 90%;
+}
