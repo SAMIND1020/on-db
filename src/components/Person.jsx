@@ -14,8 +14,8 @@ export default function Person({ person }) {
             {/* <td className="p-2 border border-black">{person.Direccion}</td> */}
             <td className="p-2 border border-black">
                 <div className="flex flex-col items-center">
-                    {person.Grupos.map((group) => (
-                        <div key={group.id}>{group.id}</div>
+                    {person.Grupos.map((group,i) => (
+                        <div key={i}>{group.id}</div>
                     ))}
                 </div>
             </td>
