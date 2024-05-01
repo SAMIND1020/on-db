@@ -17,6 +17,8 @@ import {
 } from "../../firebase/firebaseDB";
 import { PAGES_TYPES } from "../../types/";
 
+import FormInput from "./FormInput";
+
 export default function CreatePersonModal({ setCreatePersonModal }) {
     const [page, setPage] = useState(PAGES_TYPES.FIRST);
     const [data, setData] = useState({
@@ -34,34 +36,6 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         selectedLocation: {},
     });
     const [error, setError] = useState({});
-
-    const nextPage = (p) => {
-        switch (p) {
-            case PAGES_TYPES.FIRST:
-                setPage(PAGES_TYPES.SECOND);
-                break;
-            case PAGES_TYPES.SECOND:
-                setPage(PAGES_TYPES.THIRD);
-                break;
-            default:
-                setPage(PAGES_TYPES.THIRD);
-                break;
-        }
-    };
-
-    const previusPage = (p) => {
-        switch (p) {
-            case PAGES_TYPES.SECOND:
-                setPage(PAGES_TYPES.FIRST);
-                break;
-            case PAGES_TYPES.THIRD:
-                setPage(PAGES_TYPES.SECOND);
-                break;
-            default:
-                setPage(PAGES_TYPES.FIRST);
-                break;
-        }
-    };
 
     const handleCreatePerson = (e) => {
         e.preventDefault();
@@ -124,6 +98,28 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         createUser(data);
     };
 
+    const NextButton = ({ nextPage }) => (
+        <>
+            <p
+                className="font-black p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
+                onClick={() => setPage(nextPage)}
+            >
+                Siguiente {">"}
+            </p>
+        </>
+    );
+
+    const PreviousButton = ({ previusPage }) => (
+        <>
+            <p
+                className="font-black p-1 border-2 border-black rounded-lg text-black bg-white hover:bg-gray-400 transition-all hover:cursor-pointer"
+                onClick={() => setPage(previusPage)}
+            >
+                Atras {"<"}
+            </p>
+        </>
+    );
+
     return (
         <section className="h-full w-full opacity-90 bg-black top-0 left-0 z-10 absolute">
             <div className="flex items-center justify-center h-full">
@@ -140,26 +136,55 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
                     <form onSubmit={handleCreatePerson}>
                         {page === PAGES_TYPES.FIRST ? (
                             <FirstPage
-                                nextPage={nextPage}
                                 data={data}
                                 setData={setData}
                                 error={error}
-                            />
+                            >
+                                <div className="flex justify-between">
+                                    <div></div>
+                                    <NextButton nextPage={PAGES_TYPES.SECOND} />
+                                </div>
+                            </FirstPage>
                         ) : page === PAGES_TYPES.SECOND ? (
                             <SecondPage
-                                nextPage={nextPage}
-                                previusPage={previusPage}
                                 data={data}
                                 setData={setData}
                                 error={error}
-                            />
+                            >
+                                <div className="flex justify-between">
+                                    <div></div>
+                                    <div className="flex gap-1">
+                                        <PreviousButton
+                                            previusPage={PAGES_TYPES.FIRST}
+                                        />
+                                        <NextButton
+                                            nextPage={PAGES_TYPES.THIRD}
+                                        />
+                                    </div>
+                                </div>
+                            </SecondPage>
                         ) : page === PAGES_TYPES.THIRD ? (
                             <TirthPage
-                                previusPage={previusPage}
                                 data={data}
                                 setData={setData}
                                 error={error}
-                            />
+                            >
+                                <div className="flex justify-between mt-3">
+                                    <div></div>
+                                    <div className="flex gap-1">
+                                        <PreviousButton
+                                            previusPage={PAGES_TYPES.SECOND}
+                                        />
+                                        <input
+                                            type="submit"
+                                            className={
+                                                "font-black p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
+                                            }
+                                            value="Inscribir Persona"
+                                        />
+                                    </div>
+                                </div>
+                            </TirthPage>
                         ) : (
                             <>ERROR</>
                         )}
@@ -170,7 +195,89 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
     );
 }
 
-const SecondPage = ({ previusPage, nextPage, data, setData, error }) => {
+const FirstPage = ({ setData, data, error, children }) => {
+    const {
+        Nombre,
+        Correo,
+        Telefono,
+        Edad,
+        TipoDocumento,
+        Documento,
+        Familia,
+    } = data;
+
+    const setFieldValue = (field, newValue) => {
+        const newData = { ...data };
+        newData[field] = newValue;
+        setData({ ...newData });
+    };
+
+    return (
+        <>
+            <div className="flex flex-col gap-3">
+                <FormInput
+                    field="Nombre"
+                    value={Nombre}
+                    setFieldValue={setFieldValue}
+                    error={error.Nombre}
+                />
+                <FormInput
+                    field="Correo"
+                    value={Correo}
+                    setFieldValue={setFieldValue}
+                    error={error.Correo}
+                    type="email"
+                />
+                <div className="flex">
+                    <div className="flex gap-3">
+                        <FormInput
+                            field="Documento"
+                            value={Documento}
+                            setFieldValue={setFieldValue}
+                            error={error.Documento}
+                        />
+                        <select
+                            className="border border-black rounded-xl"
+                            onChange={(e) =>
+                                setData({
+                                    ...data,
+                                    TipoDocumento: e.target.value,
+                                })
+                            }
+                            value={TipoDocumento}
+                        >
+                            <option value="T.I">T.I</option>
+                            <option value="C.C">C.C</option>
+                            <option value="C.E">C.E</option>
+                        </select>
+                    </div>
+                </div>
+                <FormInput
+                    field="Familia"
+                    value={Familia}
+                    setFieldValue={setFieldValue}
+                    error={false}
+                />
+                <FormInput
+                    field="Telefono"
+                    value={Telefono}
+                    setFieldValue={setFieldValue}
+                    error={error.Telefono}
+                />
+                <FormInput
+                    field="Edad"
+                    value={Edad}
+                    setFieldValue={setFieldValue}
+                    error={error.Edad}
+                    type="number"
+                />
+                {children}
+            </div>
+        </>
+    );
+};
+
+const SecondPage = ({ data, setData, error, children }) => {
     const [locationSearch, setLocationSearch] = useState("");
     const [locations, setLocations] = useState([]);
 
@@ -272,23 +379,7 @@ const SecondPage = ({ previusPage, nextPage, data, setData, error }) => {
                     </div>
                 )}
             </div>
-            <div className="flex justify-between">
-                <div></div>
-                <div className="flex gap-1">
-                    <p
-                        className="font-black p-1 border-2 border-black rounded-lg text-black bg-white hover:bg-gray-400 transition-all hover:cursor-pointer"
-                        onClick={() => previusPage(PAGES_TYPES.SECOND)}
-                    >
-                        Atras {"<"}
-                    </p>
-                    <p
-                        className="font-black p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
-                        onClick={() => nextPage(PAGES_TYPES.SECOND)}
-                    >
-                        Siguiente {">"}
-                    </p>
-                </div>
-            </div>
+            {children}
         </>
     );
 };
@@ -368,160 +459,7 @@ const MapContent = ({ setLocations, locations, setSelectedLocation }) => {
     );
 };
 
-const FirstPage = ({ nextPage, setData, data, error }) => {
-    const {
-        Nombre,
-        Correo,
-        Telefono,
-        Edad,
-        TipoDocumento,
-        Documento,
-        Familia,
-    } = data;
-
-    return (
-        <>
-            <div className="flex flex-col gap-3">
-                <div className="flex">
-                    {error.Nombre && (
-                        <div className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black relative">
-                            X
-                        </div>
-                    )}
-                    <input
-                        type="text"
-                        placeholder="Nombre"
-                        className="p-2 border border-black rounded-xl w-full"
-                        value={Nombre}
-                        onChange={(e) =>
-                            setData({
-                                ...data,
-                                Nombre: e.target.value,
-                            })
-                        }
-                    />
-                </div>
-                <div className="flex">
-                    {error.Correo && (
-                        <p className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black">
-                            X
-                        </p>
-                    )}
-                    <input
-                        type="email"
-                        placeholder="Correo"
-                        className="p-2 border border-black rounded-xl w-full"
-                        value={Correo}
-                        onChange={(e) =>
-                            setData({
-                                ...data,
-                                Correo: e.target.value,
-                            })
-                        }
-                    />
-                </div>
-                <div className="flex">
-                    {error.Documento && (
-                        <p className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black">
-                            X
-                        </p>
-                    )}
-                    <div className="flex gap-3">
-                        <input
-                            type="number"
-                            placeholder="Numero de Identificación"
-                            className="p-2 border border-black rounded-xl w-full"
-                            value={Documento}
-                            onChange={(e) =>
-                                setData({
-                                    ...data,
-                                    Documento: e.target.value,
-                                })
-                            }
-                            min={0}
-                        />
-                        <select
-                            className="border border-black rounded-xl"
-                            onChange={(e) =>
-                                setData({
-                                    ...data,
-                                    TipoDocumento: e.target.value,
-                                })
-                            }
-                            value={TipoDocumento}
-                        >
-                            <option value="T.I">T.I</option>
-                            <option value="C.C">C.C</option>
-                            <option value="C.E">C.E</option>
-                        </select>
-                    </div>
-                </div>
-                <input
-                    type="text"
-                    placeholder="Familia"
-                    className="p-2 border border-black rounded-xl w-full"
-                    value={Familia}
-                    onChange={(e) =>
-                        setData({
-                            ...data,
-                            Familia: e.target.value,
-                        })
-                    }
-                />
-                <div className="flex">
-                    {error.Telefono && (
-                        <p className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black">
-                            X
-                        </p>
-                    )}
-                    <input
-                        type="text"
-                        placeholder="Teléfono"
-                        className="p-2 border border-black rounded-xl w-full"
-                        value={Telefono}
-                        onChange={(e) =>
-                            setData({
-                                ...data,
-                                Telefono: e.target.value,
-                            })
-                        }
-                    />
-                </div>
-                <div className="flex">
-                    {error.Edad && (
-                        <p className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black">
-                            X
-                        </p>
-                    )}
-                    <input
-                        type="number"
-                        placeholder="Edad"
-                        className="p-2 border border-black rounded-xl w-full"
-                        value={Edad}
-                        onChange={(e) =>
-                            setData({
-                                ...data,
-                                Edad: parseInt(e.target.value),
-                            })
-                        }
-                        min={0}
-                    />
-                </div>
-                <div className="flex justify-between">
-                    <div></div>
-                    <p
-                        className="font-black p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
-                        onClick={() => nextPage(PAGES_TYPES.FIRST)}
-                    >
-                        Siguiente {">"}
-                    </p>
-                </div>
-            </div>
-        </>
-    );
-};
-
-const TirthPage = ({ previusPage, data, setData, error }) => {
+const TirthPage = ({ data, setData, error, children }) => {
     const [influencers, setInfluencers] = useState([]);
     const [groups, setGroups] = useState([]);
 
@@ -551,6 +489,12 @@ const TirthPage = ({ previusPage, data, setData, error }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const setFieldValue = (field, newValue) => {
+        const newData = { ...data };
+        newData[field] = newValue;
+        setData({ ...newData });
+    };
+
     return (
         <>
             <div>
@@ -559,22 +503,12 @@ const TirthPage = ({ previusPage, data, setData, error }) => {
                         Fecha Nacimiento:
                     </label>
                     <div className="flex">
-                        {error.FechaNacimiento && (
-                            <div className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black relative">
-                                X
-                            </div>
-                        )}
-                        <input
-                            id="fechanacimiento"
-                            type="date"
-                            className="p-2 border border-black rounded-xl w-full"
+                        <FormInput
+                            field="FechaNacimiento"
                             value={FechaNacimiento}
-                            onChange={(e) =>
-                                setData({
-                                    ...data,
-                                    FechaNacimiento: e.target.value,
-                                })
-                            }
+                            setFieldValue={setFieldValue}
+                            error={error.FechaNacimiento}
+                            type="date"
                         />
                     </div>
                 </div>
@@ -583,22 +517,12 @@ const TirthPage = ({ previusPage, data, setData, error }) => {
                         Fecha Inicio:
                     </label>
                     <div className="flex">
-                        {error.FechaInicio && (
-                            <div className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black relative">
-                                X
-                            </div>
-                        )}
-                        <input
-                            id="fechainicio"
-                            type="date"
-                            className="p-2 border border-black rounded-xl w-full"
+                        <FormInput
+                            field="FechaInicio"
                             value={FechaInicio}
-                            onChange={(e) =>
-                                setData({
-                                    ...data,
-                                    FechaInicio: e.target.value,
-                                })
-                            }
+                            setFieldValue={setFieldValue}
+                            error={error.FechaInicio}
+                            type="date"
                         />
                     </div>
                 </div>
@@ -668,22 +592,7 @@ const TirthPage = ({ previusPage, data, setData, error }) => {
                     </ul>
                 </div>
             </div>
-            <div className="flex justify-between mt-3">
-                <div></div>
-                <div className="flex gap-1">
-                    <p
-                        className="font-black p-1 border-2 border-black rounded-lg text-black bg-white hover:bg-gray-400 transition-all hover:cursor-pointer"
-                        onClick={() => previusPage(PAGES_TYPES.THIRD)}
-                    >
-                        Atras {"<"}
-                    </p>
-                    <input
-                        type="submit"
-                        className="font-black p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
-                        value="Inscribir Persona"
-                    />
-                </div>
-            </div>
+            {children}
         </>
     );
 };
