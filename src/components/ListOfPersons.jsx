@@ -2,10 +2,8 @@
 import { useEffect, useState } from "react";
 import { getPersons } from "../../firebase/firebaseDB";
 
-
-
 import FilterModal from "./FilterModal";
-import Person from "./Person";
+import Person, { PersonMobile } from "./Person";
 import CreatePersonModal from "./CreatePersonModal";
 
 export default function ListOfUsers({ children }) {
@@ -46,7 +44,7 @@ export default function ListOfUsers({ children }) {
                 <div className="w-full h-8">
                     <FilterModal setFilter={setFilter} />
                 </div>
-                <table>
+                <table className="md:table hidden">
                     <thead>
                         <tr>
                             <th
@@ -96,6 +94,12 @@ export default function ListOfUsers({ children }) {
                             ))}
                     </tbody>
                 </table>
+                <div className="md:hidden block">
+                    {persons.length != 0 &&
+                        persons.map((person) => (
+                            <PersonMobile key={person.id} person={person} />
+                        ))}
+                </div>
                 <div className="flex justify-between">
                     <div></div>
 

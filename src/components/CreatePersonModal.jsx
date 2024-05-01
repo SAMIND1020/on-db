@@ -298,7 +298,7 @@ const SecondPage = ({ data, setData, error, children }) => {
     return (
         <>
             {!Object.keys(data.selectedLocation).length ? (
-                <div className="w-[40dvw] h-[60dvh]">
+                <div className="md:w-[40dvw] w-[60dvw] h-[60dvh] mb-10">
                     <input
                         value={locationSearch}
                         onChange={(e) => setLocationSearch(e.target.value)}

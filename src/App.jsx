@@ -35,7 +35,8 @@ export default function App() {
     return (
         <>
             <header className="text-white bg-red-500 p-5 flex justify-between items-center sticky top-0 left-0">
-                <p className="font-bold text-3xl">ON Bases de Datos</p>
+                <p className="font-bold text-3xl sm:hidden block">ON DB</p>
+                <p className="font-bold text-3xl sm:block hidden">ON Bases de Datos</p>
 
                 {user.uid ? (
                     <p
