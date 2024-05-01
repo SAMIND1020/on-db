@@ -87,7 +87,6 @@ export default function ListOfMyInfluences({ children, influencer }) {
                         </th>
                         <th className="border border-black p-2">Telefono</th>
                         <th className="border border-black p-2">Edad</th>
-                        <th className="border border-black p-2">Dirección</th>
                         <th className="border border-black p-2">Grupos</th>
                         <th className="border border-black p-2">Incluencer</th>
                     </tr>

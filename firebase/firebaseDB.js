@@ -11,8 +11,7 @@ export async function getPersons({ order, filter, influencerRef }) {
         ) :
         query(collection(fs, "personas"),
             where("Influencer", "==", influencerRef),
-            orderBy(order.orderBy, order.type),
-            limit(10),
+            // limit(10),
         )
 
     const querySnapshot = await getDocs(queryOpt)
@@ -107,6 +106,7 @@ export async function createUser(data) {
     const Direccion = { address, display_name, name, lat, lon, place_id, licence };
     const Grupos = Object.entries(group).filter(([, v]) => v).map(([k]) => `/grupos/${k}`);
 
+    // TODO: Fix the upload of the influencer and the groups.
 
     await setDoc(doc(fs, "personas", Documento), {
         ...payload,
