@@ -98,20 +98,19 @@ export async function getGroups() {
 }
 
 export async function createUser(data) {
-    const { Documento, group, selectedLocation, FechaInicio, FechaNacimiento, ...payload } = data;
+    const { Documento, group, selectedLocation, FechaInicio, FechaNacimiento, influencer, ...payload } = data;
 
     if (Object.values(data).reduce((a, c) => !c ? true : a, false)) return;
 
     const { address, display_name, name, lat, lon, place_id, licence } = selectedLocation;
     const Direccion = { address, display_name, name, lat, lon, place_id, licence };
-    const Grupos = Object.entries(group).filter(([, v]) => v).map(([k]) => `/grupos/${k}`);
-
-    // TODO: Fix the upload of the influencer and the groups.
+    const Grupos = Object.entries(group).filter(([, v]) => v).map(([k]) => doc(fs, `/grupos/${k}`));
 
     await setDoc(doc(fs, "personas", Documento), {
         ...payload,
         Direccion,
         Grupos,
+        Influencer: doc(fs, `personas/${influencer}`),
         "Fecha de Nacimiento": FechaNacimiento,
         "Fecha de Inicio": FechaInicio
     });
