@@ -66,6 +66,8 @@ export async function getInfluencer(email) {
 }
 
 export async function getInfluencerRef(influencerRef) {
+    if(!influencerRef) return {ref:{}};
+
     const res = await getDoc(doc(fs, influencerRef));
 
     return res;
