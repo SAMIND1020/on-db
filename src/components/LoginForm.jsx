@@ -6,7 +6,7 @@ import { ALERT_TYPES } from "../../types";
 
 import Alert from "../components/Alert";
 
-export default function LoginForm({ setLoginModal }) {
+export default function LoginForm({ setLoginModal, resetAuth }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [alert, setAlert] = useState({});
@@ -34,6 +34,8 @@ export default function LoginForm({ setLoginModal }) {
                 msg: "Ha iniciado sesión correctamente",
                 type: ALERT_TYPES.SUCCESS,
             });
+
+            resetAuth(true);
 
             setTimeout(() => {
                 setLoginModal(false);

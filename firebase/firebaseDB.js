@@ -51,19 +51,6 @@ export async function getPersons({ order, filter, influencerRef }) {
     return filteredData;
 }
 
-export async function getInfluencer(email) {
-    const response = [];
-
-    const querySnapshot = await getDocs(query(collection(fs, "roles"), where("Email", "==", email)));
-    querySnapshot.forEach((doc) => response.push({ ...doc.data(), id: doc.id }));
-
-    const influencer = response.map((res) => ({
-        ...res,
-        Referencia: `/personas/${res.id}`
-    }));
-
-    return influencer[0]
-}
 
 export async function getInfluencerRef(influencerRef) {
     if(!influencerRef) return {ref:{}};

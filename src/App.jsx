@@ -7,7 +7,6 @@ import { LISTS_TYPES, ROLES_TYPES } from "../types";
 import LoginForm from "./components/LoginForm";
 import ListOfPersons from "./components/ListOfPersons";
 import ListOfMyInfluences from "./components/ListOfMyInfluences";
-import { getInfluencer } from "../firebase/firebaseDB";
 
 export default function App() {
     const [loginModal, setLoginModal] = useState(false);
@@ -18,18 +17,8 @@ export default function App() {
     const [select, setSelect] = useState();
 
     useEffect(() => {
-        getUser((user) => {
-            const fn = async () => {
-                const i = user.uid ? await getInfluencer(user.email) : {};
-
-                setInfluencer({
-                    influencer: i,
-                    user,
-                });
-            };
-            fn();
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const fn = async () => setInfluencer(await getUser());
+        fn();
     }, []);
 
     useEffect(() => {
@@ -46,6 +35,13 @@ export default function App() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [influencer]);
 
+    const resetAuth = (opt) => {
+        if (!opt) return setInfluencer({ influencer: {}, user: {} });
+
+        const fn = async () => setInfluencer(await getUser());
+        fn();
+    };
+
     return (
         <>
             <header className="text-white bg-red-500 p-5 flex justify-between items-center sticky top-0 left-0">
@@ -58,7 +54,7 @@ export default function App() {
                     <p
                         className="font-bold text-xl hover:cursor-pointer"
                         onClick={() => {
-                            setInfluencer({ influencer: {}, user: {} });
+                            resetAuth(false);
                             signOut();
                         }}
                     >
@@ -74,7 +70,12 @@ export default function App() {
                 )}
             </header>
             <main className="p-10 flex flex-col gap-10">
-                {loginModal && <LoginForm setLoginModal={setLoginModal} />}
+                {loginModal && (
+                    <LoginForm
+                        setLoginModal={setLoginModal}
+                        resetAuth={resetAuth}
+                    />
+                )}
                 <div>
                     <div className="flex justify-between">
                         <h2 className="font-bold text-2xl mb-2">
