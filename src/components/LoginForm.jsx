@@ -2,12 +2,11 @@
 import { useState } from "react";
 
 import { login } from "../../firebase/firebaseAuth";
-import { getInfluencer } from "../../firebase/firebaseDB";
 import { ALERT_TYPES } from "../../types";
 
 import Alert from "../components/Alert";
 
-export default function LoginForm({ setLoginModal }) {
+export default function LoginForm({ setLoginModal, resetAuth }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [alert, setAlert] = useState({});
@@ -22,6 +21,7 @@ export default function LoginForm({ setLoginModal }) {
             });
 
         const fn = async () => {
+            // eslint-disable-next-line no-unused-vars
             const { error, data } = await login(email, password);
 
             if (error)
@@ -35,12 +35,7 @@ export default function LoginForm({ setLoginModal }) {
                 type: ALERT_TYPES.SUCCESS,
             });
 
-            const influencer = await getInfluencer(data.email);
-
-            localStorage.setItem(
-                "influencer",
-                JSON.stringify(influencer ? influencer : {})
-            );
+            resetAuth(true);
 
             setTimeout(() => {
                 setLoginModal(false);

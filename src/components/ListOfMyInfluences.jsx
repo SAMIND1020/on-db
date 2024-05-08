@@ -29,7 +29,7 @@ export default function ListOfMyInfluences({ children, influencer }) {
             setInfluencerRef(
                 (await getInfluencerRef(influencer.Referencia)).ref
             );
-        fn();
+        if(influencer) fn();
     }, [influencer]);
 
     const handleChangeOrder = (e) => {
