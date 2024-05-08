@@ -23,7 +23,7 @@ export default function App() {
 
     useEffect(() => {
         setSelect(
-            influencer.user.uid
+            influencer?.user?.uid
                 ? [ROLES_TYPES.ADMIN, ROLES_TYPES.ADMIN_INFLUENCER].includes(
                       influencer.influencer?.Rol
                   )
@@ -50,7 +50,7 @@ export default function App() {
                     ON Bases de Datos
                 </p>
 
-                {influencer.user.uid ? (
+                {influencer?.user?.uid ? (
                     <p
                         className="font-bold text-xl hover:cursor-pointer"
                         onClick={() => {
@@ -84,7 +84,7 @@ export default function App() {
                                     ROLES_TYPES.ADMIN,
                                     ROLES_TYPES.ADMIN_INFLUENCER,
                                 ].includes(influencer.influencer?.Rol) &&
-                                    influencer.user?.uid && (
+                                    influencer?.user?.uid && (
                                         <p
                                             className={`hover:cursor-pointer p-2 ${
                                                 select == LISTS_TYPES.USERS
@@ -105,7 +105,7 @@ export default function App() {
                                     ROLES_TYPES.INFLUENCER,
                                     ROLES_TYPES.ADMIN_INFLUENCER,
                                 ].includes(influencer.influencer?.Rol) &&
-                                    influencer.user?.uid && (
+                                    influencer?.user?.uid && (
                                         <p
                                             className={`border border-l-gray-600 p-2 hover:cursor-pointer ${
                                                 select ==
