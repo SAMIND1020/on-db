@@ -25,7 +25,6 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         Nombre: "",
         Correo: "",
         Telefono: "",
-        Edad: "",
         TipoDocumento: "C.C",
         Documento: "",
         Familia: "",
@@ -49,9 +48,6 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         const newFechaInicio = new Date(data.FechaInicio);
 
         if (!data.Nombre) errorFirstPage.Nombre = "Invalid Name";
-
-        if (!data.Edad || data.Edad < 0 || data.Edad > 150)
-            errorFirstPage.Edad = "Invalid Age";
 
         if (!emailRegex.test(data.Correo))
             errorFirstPage.Correo = "Invalid Email";
@@ -200,7 +196,6 @@ const FirstPage = ({ setData, data, error, children }) => {
         Nombre,
         Correo,
         Telefono,
-        Edad,
         TipoDocumento,
         Documento,
         Familia,
@@ -263,13 +258,6 @@ const FirstPage = ({ setData, data, error, children }) => {
                     value={Telefono}
                     setFieldValue={setFieldValue}
                     error={error.Telefono}
-                />
-                <FormInput
-                    field="Edad"
-                    value={Edad}
-                    setFieldValue={setFieldValue}
-                    error={error.Edad}
-                    type="number"
                 />
                 {children}
             </div>

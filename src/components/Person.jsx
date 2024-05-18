@@ -30,7 +30,7 @@ export default function Person({ person }) {
                     )}
                 </div>
             </td>
-            <td className="p-2 border border-black">{Influencer.Nombre}</td>
+            <td className="p-2 border border-black">{Influencer?.Nombre}</td>
         </tr>
     );
 }
@@ -81,7 +81,7 @@ export function PersonMobile({ person }) {
                 </div>
                 <p>
                     <span className="font-bold">Influencer: </span>
-                    {Influencer.Nombre}
+                    {Influencer?.Nombre}
                 </p>
             </div>
         </div>

@@ -53,7 +53,7 @@ export async function getPersons({ order, filter, influencerRef }) {
 
 
 export async function getInfluencerRef(influencerRef) {
-    if(!influencerRef) return {ref:{}};
+    if (!influencerRef) return { ref: {} };
 
     const res = await getDoc(doc(fs, influencerRef));
 
@@ -95,8 +95,11 @@ export async function createUser(data) {
     const Direccion = { address, display_name, name, lat, lon, place_id, licence };
     const Grupos = Object.entries(group).filter(([, v]) => v).map(([k]) => doc(fs, `/grupos/${k}`));
 
-    await setDoc(doc(fs, "personas", Documento), {
+    const generarId = () => Math.random().toString(36).substr(2, 10);
+
+    await setDoc(doc(fs, "personas", generarId()), {
         ...payload,
+        Documento,
         Direccion,
         Grupos,
         Influencer: doc(fs, `personas/${influencer}`),
