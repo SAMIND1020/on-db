@@ -127,7 +127,7 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
                         {"<"} Cerrar
                     </button>
                     <h1 className="text-3xl font-black mb-5">
-                        Inscribir Persona
+                        Crear Persona
                     </h1>
                     <form onSubmit={handleCreatePerson}>
                         {page === PAGES_TYPES.FIRST ? (

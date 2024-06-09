@@ -24,9 +24,7 @@ export default function App() {
     useEffect(() => {
         setSelect(
             influencer?.user?.uid
-                ? [ROLES_TYPES.ADMIN, ROLES_TYPES.ADMIN_INFLUENCER].includes(
-                      influencer.influencer?.Rol
-                  )
+                ? [ROLES_TYPES.ADMIN].includes(influencer.influencer?.Rol)
                     ? LISTS_TYPES.USERS
                     : LISTS_TYPES.MYINFLUENCES
                 : null
