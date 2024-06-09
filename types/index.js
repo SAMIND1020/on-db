@@ -27,3 +27,9 @@ export const ROLES_TYPES = {
     INFLUENCER: "Influencer",
     ADMIN_INFLUENCER: "Admin/Influencer",
 }
+
+export const EVENTS_STATUS = {
+    INACTIVE: "Inactivo",
+    ACTIVE: "Activo",
+    SOON: "Próximamente"
+}

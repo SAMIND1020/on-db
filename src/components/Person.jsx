@@ -35,7 +35,7 @@ export default function Person({ person }) {
     );
 }
 
-export function PersonMobile({ person }) {
+export function PersonMobile({ person, extra, children }) {
     const {
         Nombre,
         Correo,
@@ -54,36 +54,39 @@ export function PersonMobile({ person }) {
                 <p>{Correo}</p>
                 <p>{Telefono}</p>
             </div>
-            <div className="text-sm border-l border-black pl-2 mx-2 mt-2">
-                <p>
-                    <span className="font-bold">Fecha de Nacimiento: </span>
-                    {FechaNacimiento}
-                </p>
-                <p>
-                    <span className="font-bold">Fecha de Inicio: </span>
-                    {FechaInicio}
-                </p>
-                <p>
-                    <span className="font-bold">Edad: </span>
-                    {Edad}
-                </p>
-                <div>
-                    <p className="font-bold text-sm">Grupos: </p>
-                    <div className="flex flex-col text-sm ml-3">
-                        {Grupos ? (
-                            Grupos.map((group, i) => (
-                                <div key={i}>{group.id}</div>
-                            ))
-                        ) : (
-                            <p>No tiene grupos</p>
-                        )}
+            {(typeof extra == "undefined" || extra) && (
+                <div className="text-sm border-l border-black pl-2 mx-2 mt-2">
+                    <p>
+                        <span className="font-bold">Fecha de Nacimiento: </span>
+                        {FechaNacimiento}
+                    </p>
+                    <p>
+                        <span className="font-bold">Fecha de Inicio: </span>
+                        {FechaInicio}
+                    </p>
+                    <p>
+                        <span className="font-bold">Edad: </span>
+                        {Edad}
+                    </p>
+                    <div>
+                        <p className="font-bold text-sm">Grupos: </p>
+                        <div className="flex flex-col text-sm ml-3">
+                            {Grupos ? (
+                                Grupos.map((group, i) => (
+                                    <div key={i}>{group.id}</div>
+                                ))
+                            ) : (
+                                <p>No tiene grupos</p>
+                            )}
+                        </div>
                     </div>
+                    <p>
+                        <span className="font-bold">Influencer: </span>
+                        {Influencer?.Nombre}
+                    </p>
                 </div>
-                <p>
-                    <span className="font-bold">Influencer: </span>
-                    {Influencer?.Nombre}
-                </p>
-            </div>
+            )}
+            {children}
         </div>
     );
 }

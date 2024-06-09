@@ -1,5 +1,7 @@
-import { collection, getDocs, getDoc, setDoc, doc, orderBy, limit, query, where } from 'firebase/firestore'
+import { collection, getDocs, getDoc, setDoc, doc, orderBy, limit, query, where, updateDoc } from 'firebase/firestore'
 import { fs } from './firebaseConfig';
+
+import { EVENTS_STATUS } from '../types'
 
 export async function getPersons({ order, filter, influencerRef }) {
     const response = [];
@@ -106,4 +108,81 @@ export async function createUser(data) {
         "Fecha de Nacimiento": FechaNacimiento,
         "Fecha de Inicio": FechaInicio
     });
+}
+
+export async function getEventsByRefs(eventsRefs) {
+    const response = [];
+
+    if (!eventsRefs) return;
+
+    for (let i = 0; i < eventsRefs.length; i++) {
+        const res = (await getDoc(eventsRefs[i])).data();
+
+        response.push({
+            ...res,
+            id: eventsRefs[i].id,
+            FechaFinalizacion: res["Fecha de Finalizacion"].toDate().toDateString(),
+            FechaInicio: res["Fecha de Inicio"].toDate().toDateString(),
+            status: res["Fecha de Finalizacion"].toDate().getTime() - Date.now() < 0
+                ? EVENTS_STATUS.INACTIVE
+                : res["Fecha de Inicio"].toDate().getTime() - Date.now() > 0
+                    ? EVENTS_STATUS.SOON
+                    : EVENTS_STATUS.ACTIVE,
+        })
+    }
+
+    for (let i = 0; i < response.length; i++) {
+        const tempAsistentcias = [];
+
+        for (let j = 0; j < response[i].Asistencias.length; j++) {
+            if (!response[i].Asistencias[j]) break;
+
+            const res = (await getDoc(response[i].Asistencias[j])).data();
+
+            tempAsistentcias.push({ ...res });
+        }
+
+        response[i].Asistencias = [...tempAsistentcias];
+    }
+
+    return response;
+}
+
+export async function getGroupMembers(groupRef) {
+    const response = (await getDoc(groupRef)).data();
+
+    const tempMiembros = [];
+
+    for (let i = 0; i < response.Miembros.length; i++) {
+        if (!response.Miembros[i]) break;
+
+        const res = (await getDoc(response.Miembros[i])).data();
+
+        tempMiembros.push({ ...res });
+    }
+
+    response.Miembros = [...tempMiembros];
+
+    return response.Miembros;
+}
+
+export async function updateInscribedPersons(inscribedPersons, event) {
+    const res = [];
+
+    for (let i = 0; i < inscribedPersons.length; i++) {
+        const p = inscribedPersons[i];
+
+        const response = [];
+
+        const querySnapshot = await getDocs(query(collection(fs, "personas"), where("Documento", "==", p.Documento)));
+        querySnapshot.forEach((doc2) => response.push(doc(fs, "personas", doc2.id)));
+
+        res.push(response[0])
+    }
+
+    await updateDoc(doc(fs, "eventos", event.id), {
+        Asistencias: res
+    })
+
+    return res;
 }
