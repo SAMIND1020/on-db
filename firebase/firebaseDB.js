@@ -99,6 +99,9 @@ export async function createUser(data) {
 
     const generarId = () => Math.random().toString(36).substr(2, 10);
 
+    // TODO: Add the doc in the group's members
+    // TODO: Add the features for the services
+
     await setDoc(doc(fs, "personas", generarId()), {
         ...payload,
         Documento,
