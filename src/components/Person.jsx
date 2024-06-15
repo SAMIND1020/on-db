@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-export default function Person({ person }) {
+export default function Person({ person, children }) {
     const {
         Nombre,
         Correo,
@@ -31,6 +31,7 @@ export default function Person({ person }) {
                 </div>
             </td>
             <td className="p-2 border border-black">{Influencer?.Nombre}</td>
+            <td>{children}</td>
         </tr>
     );
 }
