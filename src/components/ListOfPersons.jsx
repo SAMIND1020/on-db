@@ -11,6 +11,7 @@ export default function ListOfUsers({ children }) {
     const [order, setOrder] = useState({ orderBy: "Nombre", type: "asc" });
     const [filter, setFilter] = useState({ Nombre: "" });
     const [createPersonModal, setCreatePersonModal] = useState(false);
+    const [deleteMode, setDeleteMode] = useState("No change");
 
     useEffect(() => {
         const fn = async () => {
@@ -48,17 +49,32 @@ export default function ListOfUsers({ children }) {
                     <Persons
                         persons={persons}
                         handleChangeOrder={handleChangeOrder}
+                        deleteMode={deleteMode}
                     />
                 </section>
                 <div className="flex justify-between">
                     <div></div>
 
-                    <button
-                        className="px-2 rounded-lg border-2 border-black text-xl font-bold mt-4"
-                        onClick={() => setCreatePersonModal(true)}
-                    >
-                        {"+"}
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            className="px-2 rounded-lg border-2 border-black text-xl font-bold mt-4 hover:bg-slate-500 transition-all"
+                            onClick={() => setCreatePersonModal(true)}
+                        >
+                            {"+"}
+                        </button>
+                        <button
+                            className="px-2 rounded-lg border-2 border-black text-xl font-bold mt-4 hover:bg-slate-500 transition-all"
+                            onClick={() =>
+                                setDeleteMode(
+                                    typeof deleteMode == "string"
+                                        ? true
+                                        : !deleteMode
+                                )
+                            }
+                        >
+                            {"-"}
+                        </button>
+                    </div>
                 </div>
 
                 {createPersonModal && (

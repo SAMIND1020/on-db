@@ -1,4 +1,4 @@
-import { collection, getDocs, getDoc, setDoc, doc, orderBy, limit, query, where, updateDoc } from 'firebase/firestore'
+import { collection, getDocs, getDoc, setDoc, doc, orderBy, limit, query, where, updateDoc, deleteDoc } from 'firebase/firestore'
 import { fs } from './firebaseConfig';
 
 import { EVENTS_STATUS } from '../types'
@@ -188,4 +188,10 @@ export async function updateInscribedPersons(inscribedPersons, event) {
     })
 
     return res;
+}
+
+export async function deletePerson(person) {
+    await deleteDoc(doc(fs, "personas", person.id))
+
+    return person;
 }

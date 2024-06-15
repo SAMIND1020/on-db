@@ -1,7 +1,37 @@
 /* eslint-disable react/prop-types */
-import Person, {PersonMobile} from './Person'
+import { useEffect, useState } from "react";
+import Person, { PersonMobile } from "./Person";
+import Alert from "./Alert";
+import { ALERT_TYPES } from "../../types";
+import { deletePerson } from "../../firebase/firebaseDB";
 
-export default function Persons({ handleChangeOrder, persons }) {
+export default function Persons({ handleChangeOrder, persons, deleteMode }) {
+    const [alert, setAlert] = useState({});
+
+    useEffect(() => {
+        if (typeof deleteMode == "boolean")
+            setAlert({
+                msg: deleteMode
+                    ? "Modo Eliminar Activado"
+                    : "Modo Eliminar Desactivado",
+                type: ALERT_TYPES.ALERT,
+            });
+
+        setTimeout(() => {
+            setAlert({});
+        }, 3000);
+    }, [deleteMode]);
+
+    const handleDeletePerson = (person) =>
+        setAlert(
+            Object.keys(deletePerson(person)).length != 0
+                ? {
+                      msg: `Se ha eliminado la persona ${person.Nombre} correctamente`,
+                      type: ALERT_TYPES.SUCCESS,
+                  }
+                : {}
+        );
+
     return (
         <div>
             <table className="md:table hidden">
@@ -46,15 +76,79 @@ export default function Persons({ handleChangeOrder, persons }) {
                 <tbody className="users">
                     {persons.length != 0 &&
                         persons.map((person) => (
-                            <Person key={person.id} person={person} />
+                            <Person key={person.id} person={person}>
+                                {typeof deleteMode == "boolean" &&
+                                    deleteMode && (
+                                        <>
+                                            <button
+                                                className="py-2 my-3 px-1 ml-1 bg-red-700 hover:bg-red-800 text-white font-bold border border-black rounded-lg"
+                                                onClick={() =>
+                                                    setAlert({
+                                                        msg: `¿Desea eliminar la persona ${person.Nombre}?`,
+                                                        type: ALERT_TYPES.CONFIRM,
+                                                        handleConfirm: () =>
+                                                            handleDeletePerson(
+                                                                person
+                                                            ),
+                                                    })
+                                                }
+                                            >
+                                                Borrar
+                                            </button>
+                                        </>
+                                    )}
+                            </Person>
                         ))}
                 </tbody>
             </table>
             <div className="md:hidden block">
                 {persons.length != 0 &&
                     persons.map((person) => (
-                        <PersonMobile key={person.id} person={person} />
+                        <PersonMobile key={person.id} person={person}>
+                            {typeof deleteMode == "boolean" && deleteMode && (
+                                <>
+                                    <button
+                                        className="p-1 my-1 h-fit ml-1 text-sm bg-red-700 hover:bg-red-800 text-white font-bold border border-black rounded-lg"
+                                        onClick={() =>
+                                            setAlert({
+                                                msg: `¿Desea eliminar la persona ${person.Nombre}?`,
+                                                type: ALERT_TYPES.CONFIRM,
+                                                handleConfirm: () =>
+                                                    handleDeletePerson(person),
+                                            })
+                                        }
+                                    >
+                                        Borrar
+                                    </button>
+                                </>
+                            )}
+                        </PersonMobile>
                     ))}
+            </div>
+
+            <div>
+                {Object.keys(alert).length != 0 && (
+                    <div className="fixed top-10 sm:left-[40dvw] left-[30dvw]">
+                        <div className="relative">
+                            <section className="w-full z-10 sticky">
+                                <div className="flex items-center justify-center">
+                                    <div
+                                        className={`font-bold p-2 rounded-xl border-2 ${
+                                            alert.type == ALERT_TYPES.SUCCESS
+                                                ? "bg-green-700 border-green-900"
+                                                : "bg-indigo-700 border-indigo-900"
+                                        }`}
+                                    >
+                                        <Alert
+                                            alert={alert}
+                                            setAlert={setAlert}
+                                        />
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
