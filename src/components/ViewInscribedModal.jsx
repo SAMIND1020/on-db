@@ -171,7 +171,9 @@ const _InscribePersonModal = ({ setInscribePersonModal, e, isActive }) => {
                             />
                         </div>
                     </form>
-                    <Alert alert={alert} />
+                    <div className="mt-5">
+                        <Alert alert={alert} />
+                    </div>
                 </div>
             </div>
         </section>
