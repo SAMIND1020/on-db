@@ -107,7 +107,9 @@ export default function LoginForm({ setLoginModal, resetAuth }) {
                             className="p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
                         />
                     </form>
-                    <Alert alert={alert} />
+                    <div className="mt-5">
+                        <Alert alert={alert} />
+                    </div>
                 </div>
             </div>
         </section>

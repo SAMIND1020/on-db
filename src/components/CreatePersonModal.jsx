@@ -493,7 +493,7 @@ const TirthPage = ({ data, setData, error, children }) => {
                     <div className="flex">
                         <FormInput
                             field="FechaNacimiento"
-                            value={FechaNacimiento}
+                            defaultValue={FechaNacimiento}
                             setFieldValue={setFieldValue}
                             error={error.FechaNacimiento}
                             type="date"
@@ -507,7 +507,7 @@ const TirthPage = ({ data, setData, error, children }) => {
                     <div className="flex">
                         <FormInput
                             field="FechaInicio"
-                            value={FechaInicio}
+                            defaultValue={FechaInicio}
                             setFieldValue={setFieldValue}
                             error={error.FechaInicio}
                             type="date"
