@@ -2,6 +2,7 @@ export const ALERT_TYPES = {
     SUCCESS: new Set(),
     ERROR: new Set(),
     ALERT: new Set(),
+    CONFIRM: new Set()
 }
 
 export const LISTS_TYPES = {
