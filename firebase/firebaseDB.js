@@ -98,11 +98,11 @@ export async function createUser(data) {
     const Grupos = Object.entries(group).filter(([, v]) => v).map(([k]) => doc(fs, `/grupos/${k}`));
 
     const generarId = () => Math.random().toString(36).substr(2, 10);
+    const ID = generarId();
 
-    // TODO: Add the doc in the group's members
     // TODO: Add the features for the services
 
-    await setDoc(doc(fs, "personas", generarId()), {
+    await setDoc(doc(fs, "personas", ID), {
         ...payload,
         Documento,
         Direccion,
@@ -111,6 +111,18 @@ export async function createUser(data) {
         "Fecha de Nacimiento": FechaNacimiento,
         "Fecha de Inicio": FechaInicio
     });
+
+    for (let i = 0; i < Grupos.length; i++) {
+        const g = Grupos[i];
+
+        const membersGroup = (await getDoc(g)).data().Miembros;
+
+        membersGroup.push(doc(fs, "personas", ID))
+
+        await updateDoc(g, {
+            Miembros: membersGroup
+        })
+    }
 }
 
 export async function getEventsByRefs(eventsRefs) {
@@ -135,17 +147,17 @@ export async function getEventsByRefs(eventsRefs) {
     }
 
     for (let i = 0; i < response.length; i++) {
-        const tempAsistentcias = [];
+        const tempAsistencias = [];
 
         for (let j = 0; j < response[i].Asistencias.length; j++) {
             if (!response[i].Asistencias[j]) break;
 
             const res = (await getDoc(response[i].Asistencias[j])).data();
 
-            tempAsistentcias.push({ ...res });
+            tempAsistencias.push({ ...res });
         }
 
-        response[i].Asistencias = [...tempAsistentcias];
+        response[i].Asistencias = [...tempAsistencias];
     }
 
     return response;
@@ -192,6 +204,20 @@ export async function updateInscribedPersons(inscribedPersons, event) {
 
 export async function deletePerson(person) {
     await deleteDoc(doc(fs, "personas", person.id))
+
+    // TODO: Delete in the services(soon)
+
+    for (let i = 0; i < person.Grupos.length; i++) {
+        const g = person.Grupos[i];
+
+        const membersGroup = (await getDoc(g)).data().Miembros;
+
+        const updatedMembersGroup = membersGroup.filter(m => m.id != person.id)
+
+        await updateDoc(g, {
+            Miembros: updatedMembersGroup
+        })
+    }
 
     return person;
 }
