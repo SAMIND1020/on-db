@@ -5,6 +5,7 @@ export default function Person({ person, children }) {
         Correo,
         FechaNacimiento,
         FechaInicio,
+        Servicios,
         Telefono,
         Edad,
         Grupos,
@@ -16,8 +17,6 @@ export default function Person({ person, children }) {
             <th className="p-2 border border-black">{Nombre}</th>
 
             <td className="p-2 border border-black">{Correo}</td>
-            <td className="p-2 border border-black">{FechaNacimiento}</td>
-            <td className="p-2 border border-black">{FechaInicio}</td>
             <td className="p-2 border border-black">{Telefono}</td>
             <td className="p-2 border border-black">{Edad}</td>
             {/* <td className="p-2 border border-black">{Direccion}</td> */}
@@ -27,6 +26,15 @@ export default function Person({ person, children }) {
                         Grupos.map((group, i) => <div key={i}>{group.id}</div>)
                     ) : (
                         <p>No tiene grupos</p>
+                    )}
+                </div>
+            </td>
+            <td className="p-2 border border-black">
+                <div className="flex flex-col items-center">
+                    {Servicios ? (
+                        Servicios.map((service, i) => <div key={i}>{service.id}</div>)
+                    ) : (
+                        <p>No tiene servicios</p>
                     )}
                 </div>
             </td>
@@ -42,6 +50,7 @@ export function PersonMobile({ person, extra, children }) {
         Correo,
         FechaNacimiento,
         FechaInicio,
+        Servicios,
         Telefono,
         Edad,
         Grupos,
@@ -58,14 +67,6 @@ export function PersonMobile({ person, extra, children }) {
             {(typeof extra == "undefined" || extra) && (
                 <div className="text-sm border-l border-black pl-2 mx-2 mt-2">
                     <p>
-                        <span className="font-bold">Fecha de Nacimiento: </span>
-                        {FechaNacimiento}
-                    </p>
-                    <p>
-                        <span className="font-bold">Fecha de Inicio: </span>
-                        {FechaInicio}
-                    </p>
-                    <p>
                         <span className="font-bold">Edad: </span>
                         {Edad}
                     </p>
@@ -78,6 +79,18 @@ export function PersonMobile({ person, extra, children }) {
                                 ))
                             ) : (
                                 <p>No tiene grupos</p>
+                            )}
+                        </div>
+                    </div>
+                    <div>
+                        <p className="font-bold text-sm">Servicios: </p>
+                        <div className="flex flex-col text-sm ml-3">
+                            {Grupos ? (
+                                Grupos.map((service, i) => (
+                                    <div key={i}>{service.id}</div>
+                                ))
+                            ) : (
+                                <p>No tiene servicios</p>
                             )}
                         </div>
                     </div>

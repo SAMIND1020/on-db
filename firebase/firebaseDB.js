@@ -88,25 +88,38 @@ export async function getGroups() {
     return grupos
 }
 
+export async function getServices() {
+    const response = [];
+
+    const querySnapshot = await getDocs(query(collection(fs, "servicios")));
+    querySnapshot.forEach((doc) => response.push({ ...doc.data(), id: doc.id }));
+
+    const servicios = response.map((res) => ({
+        ...res,
+    }));
+
+    return servicios
+}
+
 export async function createUser(data) {
-    const { Documento, group, selectedLocation, FechaInicio, FechaNacimiento, influencer, ...payload } = data;
+    const { Documento, group, service, selectedLocation, FechaInicio, FechaNacimiento, influencer, ...payload } = data;
 
     if (Object.values(data).reduce((a, c) => !c ? true : a, false)) return;
 
     const { address, display_name, name, lat, lon, place_id, licence } = selectedLocation;
     const Direccion = { address, display_name, name, lat, lon, place_id, licence };
     const Grupos = Object.entries(group).filter(([, v]) => v).map(([k]) => doc(fs, `/grupos/${k}`));
+    const Servicios = Object.entries(service).filter(([, v]) => v).map(([k]) => doc(fs, `/servicios/${k}`));
 
     const generarId = () => Math.random().toString(36).substr(2, 10);
     const ID = generarId();
-
-    // TODO: Add the features for the services
 
     await setDoc(doc(fs, "personas", ID), {
         ...payload,
         Documento,
         Direccion,
         Grupos,
+        Servicios,
         Influencer: doc(fs, `personas/${influencer}`),
         "Fecha de Nacimiento": FechaNacimiento,
         "Fecha de Inicio": FechaInicio
@@ -121,6 +134,18 @@ export async function createUser(data) {
 
         await updateDoc(g, {
             Miembros: membersGroup
+        })
+    }
+
+    for (let i = 0; i < Servicios.length; i++) {
+        const s = Servicios[i];
+
+        const membersService = (await getDoc(s)).data().Miembros;
+
+        membersService.push(doc(fs, "personas", ID))
+
+        await updateDoc(s, {
+            Miembros: membersService
         })
     }
 }
@@ -205,8 +230,6 @@ export async function updateInscribedPersons(inscribedPersons, event) {
 export async function deletePerson(person) {
     await deleteDoc(doc(fs, "personas", person.id))
 
-    // TODO: Delete in the services(soon)
-
     for (let i = 0; i < person.Grupos.length; i++) {
         const g = person.Grupos[i];
 
@@ -216,6 +239,18 @@ export async function deletePerson(person) {
 
         await updateDoc(g, {
             Miembros: updatedMembersGroup
+        })
+    }
+
+    for (let i = 0; i < person.Servicios.length; i++) {
+        const s = person.Servicios[i];
+
+        const membersService = (await getDoc(s)).data().Miembros;
+
+        const updatedMembersService = membersService.filter(m => m.id != person.id)
+
+        await updateDoc(s, {
+            Miembros: updatedMembersService
         })
     }
 

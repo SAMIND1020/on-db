@@ -51,25 +51,10 @@ export default function Persons({ handleChangeOrder, persons, deleteMode }) {
                         >
                             Correo <span className="text-xs">▲▼</span>
                         </th>
-                        <th
-                            className="border border-black p-2 hover:cursor-pointer"
-                            id="Fecha de Nacimiento"
-                            onClick={handleChangeOrder}
-                        >
-                            Fecha de Nacimiento
-                            <span className="text-xs">▲▼</span>
-                        </th>
-                        <th
-                            className="border border-black p-2 hover:cursor-pointer"
-                            id="Fecha de Inicio"
-                            onClick={handleChangeOrder}
-                        >
-                            Fecha de Inicio
-                            <span className="text-xs">▲▼</span>
-                        </th>
                         <th className="border border-black p-2">Telefono</th>
                         <th className="border border-black p-2">Edad</th>
                         <th className="border border-black p-2">Grupos</th>
+                        <th className="border border-black p-2">Servicios</th>
                         <th className="border border-black p-2">Incluencer</th>
                     </tr>
                 </thead>
