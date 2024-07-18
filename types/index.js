@@ -2,6 +2,7 @@ export const ALERT_TYPES = {
     SUCCESS: new Set(),
     ERROR: new Set(),
     ALERT: new Set(),
+    CONFIRM: new Set()
 }
 
 export const LISTS_TYPES = {
@@ -26,4 +27,10 @@ export const ROLES_TYPES = {
     ADMIN: "Admin",
     INFLUENCER: "Influencer",
     ADMIN_INFLUENCER: "Admin/Influencer",
+}
+
+export const EVENTS_STATUS = {
+    INACTIVE: "Inactivo",
+    ACTIVE: "Activo",
+    SOON: "Próximamente"
 }

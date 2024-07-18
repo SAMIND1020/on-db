@@ -1,5 +1,7 @@
-import { collection, getDocs, getDoc, setDoc, doc, orderBy, limit, query, where } from 'firebase/firestore'
+import { collection, getDocs, getDoc, setDoc, doc, orderBy, limit, query, where, updateDoc, deleteDoc } from 'firebase/firestore'
 import { fs } from './firebaseConfig';
+
+import { EVENTS_STATUS } from '../types'
 
 export async function getPersons({ order, filter, influencerRef }) {
     const response = [];
@@ -53,7 +55,7 @@ export async function getPersons({ order, filter, influencerRef }) {
 
 
 export async function getInfluencerRef(influencerRef) {
-    if(!influencerRef) return {ref:{}};
+    if (!influencerRef) return { ref: {} };
 
     const res = await getDoc(doc(fs, influencerRef));
 
@@ -86,21 +88,171 @@ export async function getGroups() {
     return grupos
 }
 
+export async function getServices() {
+    const response = [];
+
+    const querySnapshot = await getDocs(query(collection(fs, "servicios")));
+    querySnapshot.forEach((doc) => response.push({ ...doc.data(), id: doc.id }));
+
+    const servicios = response.map((res) => ({
+        ...res,
+    }));
+
+    return servicios
+}
+
 export async function createUser(data) {
-    const { Documento, group, selectedLocation, FechaInicio, FechaNacimiento, influencer, ...payload } = data;
+    const { Documento, group, service, selectedLocation, FechaInicio, FechaNacimiento, influencer, ...payload } = data;
 
     if (Object.values(data).reduce((a, c) => !c ? true : a, false)) return;
 
     const { address, display_name, name, lat, lon, place_id, licence } = selectedLocation;
     const Direccion = { address, display_name, name, lat, lon, place_id, licence };
     const Grupos = Object.entries(group).filter(([, v]) => v).map(([k]) => doc(fs, `/grupos/${k}`));
+    const Servicios = Object.entries(service).filter(([, v]) => v).map(([k]) => doc(fs, `/servicios/${k}`));
 
-    await setDoc(doc(fs, "personas", Documento), {
+    const generarId = () => Math.random().toString(36).substr(2, 10);
+    const ID = generarId();
+
+    await setDoc(doc(fs, "personas", ID), {
         ...payload,
+        Documento,
         Direccion,
         Grupos,
+        Servicios,
         Influencer: doc(fs, `personas/${influencer}`),
         "Fecha de Nacimiento": FechaNacimiento,
         "Fecha de Inicio": FechaInicio
     });
+
+    for (let i = 0; i < Grupos.length; i++) {
+        const g = Grupos[i];
+
+        const membersGroup = (await getDoc(g)).data().Miembros;
+
+        membersGroup.push(doc(fs, "personas", ID))
+
+        await updateDoc(g, {
+            Miembros: membersGroup
+        })
+    }
+
+    for (let i = 0; i < Servicios.length; i++) {
+        const s = Servicios[i];
+
+        const membersService = (await getDoc(s)).data().Miembros;
+
+        membersService.push(doc(fs, "personas", ID))
+
+        await updateDoc(s, {
+            Miembros: membersService
+        })
+    }
+}
+
+export async function getEventsByRefs(eventsRefs) {
+    const response = [];
+
+    if (!eventsRefs) return;
+
+    for (let i = 0; i < eventsRefs.length; i++) {
+        const res = (await getDoc(eventsRefs[i])).data();
+
+        response.push({
+            ...res,
+            id: eventsRefs[i].id,
+            FechaFinalizacion: res["Fecha de Finalizacion"].toDate().toDateString(),
+            FechaInicio: res["Fecha de Inicio"].toDate().toDateString(),
+            status: res["Fecha de Finalizacion"].toDate().getTime() - Date.now() < 0
+                ? EVENTS_STATUS.INACTIVE
+                : res["Fecha de Inicio"].toDate().getTime() - Date.now() > 0
+                    ? EVENTS_STATUS.SOON
+                    : EVENTS_STATUS.ACTIVE,
+        })
+    }
+
+    for (let i = 0; i < response.length; i++) {
+        const tempAsistencias = [];
+
+        for (let j = 0; j < response[i].Asistencias.length; j++) {
+            if (!response[i].Asistencias[j]) break;
+
+            const res = (await getDoc(response[i].Asistencias[j])).data();
+
+            tempAsistencias.push({ ...res });
+        }
+
+        response[i].Asistencias = [...tempAsistencias];
+    }
+
+    return response;
+}
+
+export async function getGroupMembers(groupRef) {
+    const response = (await getDoc(groupRef)).data();
+
+    const tempMiembros = [];
+
+    for (let i = 0; i < response.Miembros.length; i++) {
+        if (!response.Miembros[i]) break;
+
+        const res = (await getDoc(response.Miembros[i])).data();
+
+        tempMiembros.push({ ...res });
+    }
+
+    response.Miembros = [...tempMiembros];
+
+    return response.Miembros;
+}
+
+export async function updateInscribedPersons(inscribedPersons, event) {
+    const res = [];
+
+    for (let i = 0; i < inscribedPersons.length; i++) {
+        const p = inscribedPersons[i];
+
+        const response = [];
+
+        const querySnapshot = await getDocs(query(collection(fs, "personas"), where("Documento", "==", p.Documento)));
+        querySnapshot.forEach((doc2) => response.push(doc(fs, "personas", doc2.id)));
+
+        res.push(response[0])
+    }
+
+    await updateDoc(doc(fs, "eventos", event.id), {
+        Asistencias: res
+    })
+
+    return res;
+}
+
+export async function deletePerson(person) {
+    await deleteDoc(doc(fs, "personas", person.id))
+
+    for (let i = 0; i < person.Grupos.length; i++) {
+        const g = person.Grupos[i];
+
+        const membersGroup = (await getDoc(g)).data().Miembros;
+
+        const updatedMembersGroup = membersGroup.filter(m => m.id != person.id)
+
+        await updateDoc(g, {
+            Miembros: updatedMembersGroup
+        })
+    }
+
+    for (let i = 0; i < person.Servicios.length; i++) {
+        const s = person.Servicios[i];
+
+        const membersService = (await getDoc(s)).data().Miembros;
+
+        const updatedMembersService = membersService.filter(m => m.id != person.id)
+
+        await updateDoc(s, {
+            Miembros: updatedMembersService
+        })
+    }
+
+    return person;
 }

@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 
-import { login } from "../../firebase/firebaseAuth";
+import { login, resetPassword } from "../../firebase/firebaseAuth";
 import { ALERT_TYPES } from "../../types";
 
 import Alert from "../components/Alert";
@@ -30,19 +30,44 @@ export default function LoginForm({ setLoginModal, resetAuth }) {
                     type: ALERT_TYPES.ERROR,
                 });
 
+            if (data.emailVerified) {
+                setAlert({
+                    msg: "Ha iniciado sesión correctamente",
+                    type: ALERT_TYPES.SUCCESS,
+                });
+
+                resetAuth(true);
+
+                setTimeout(() => {
+                    setLoginModal(false);
+                    setEmail("");
+                    setPassword("");
+                    setAlert({});
+                }, 2000);
+
+                return;
+            }
+
+            // No email verified
+
             setAlert({
-                msg: "Ha iniciado sesión correctamente",
-                type: ALERT_TYPES.SUCCESS,
+                msg: (
+                    <>
+                        <h2 className="text-lg font-bold">
+                            ¡Bienvenido al equipo!
+                        </h2>
+                        <p>Por favor verifica tu correo electronico</p>
+                        <p>y guarda una nueva contraseña</p>
+                        <p className="text-sm">
+                            luego vuelve a iniciar sesion con tu nueva
+                            contraseña
+                        </p>
+                    </>
+                ),
+                type: ALERT_TYPES.ALERT,
             });
 
-            resetAuth(true);
-
-            setTimeout(() => {
-                setLoginModal(false);
-                setEmail("");
-                setPassword("");
-                setAlert({});
-            }, 2000);
+            await resetPassword(email);
         };
         fn();
     };
@@ -82,7 +107,9 @@ export default function LoginForm({ setLoginModal, resetAuth }) {
                             className="p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
                         />
                     </form>
-                    <Alert alert={alert} />
+                    <div className="mt-5">
+                        <Alert alert={alert} />
+                    </div>
                 </div>
             </div>
         </section>

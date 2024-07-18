@@ -1,5 +1,12 @@
 /* eslint-disable react/prop-types */
-export default function FormInput({ field, value, setFieldValue, error, type }) {
+export default function FormInput({
+    field,
+    value,
+    setFieldValue,
+    error,
+    type,
+    defaultValue,
+}) {
     return (
         <div className="flex w-full">
             {error && (
@@ -8,6 +15,7 @@ export default function FormInput({ field, value, setFieldValue, error, type }) 
                 </div>
             )}
             <input
+                defaultValue={defaultValue}
                 type={type ? type : "text"}
                 placeholder={field}
                 className="p-2 border border-black rounded-xl w-full"

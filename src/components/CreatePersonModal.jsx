@@ -14,6 +14,7 @@ import {
     createUser,
     getGroups,
     getInfluencers,
+    getServices,
 } from "../../firebase/firebaseDB";
 import { PAGES_TYPES } from "../../types/";
 
@@ -25,7 +26,6 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         Nombre: "",
         Correo: "",
         Telefono: "",
-        Edad: "",
         TipoDocumento: "C.C",
         Documento: "",
         Familia: "",
@@ -33,6 +33,7 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         FechaNacimiento: "",
         FechaInicio: "",
         group: {},
+        service: {},
         selectedLocation: {},
     });
     const [error, setError] = useState({});
@@ -49,9 +50,6 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         const newFechaInicio = new Date(data.FechaInicio);
 
         if (!data.Nombre) errorFirstPage.Nombre = "Invalid Name";
-
-        if (!data.Edad || data.Edad < 0 || data.Edad > 150)
-            errorFirstPage.Edad = "Invalid Age";
 
         if (!emailRegex.test(data.Correo))
             errorFirstPage.Correo = "Invalid Email";
@@ -130,9 +128,7 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
                     >
                         {"<"} Cerrar
                     </button>
-                    <h1 className="text-3xl font-black mb-5">
-                        Inscribir Persona
-                    </h1>
+                    <h1 className="text-3xl font-black mb-5">Crear Persona</h1>
                     <form onSubmit={handleCreatePerson}>
                         {page === PAGES_TYPES.FIRST ? (
                             <FirstPage
@@ -196,15 +192,8 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
 }
 
 const FirstPage = ({ setData, data, error, children }) => {
-    const {
-        Nombre,
-        Correo,
-        Telefono,
-        Edad,
-        TipoDocumento,
-        Documento,
-        Familia,
-    } = data;
+    const { Nombre, Correo, Telefono, TipoDocumento, Documento, Familia } =
+        data;
 
     const setFieldValue = (field, newValue) => {
         const newData = { ...data };
@@ -263,13 +252,6 @@ const FirstPage = ({ setData, data, error, children }) => {
                     value={Telefono}
                     setFieldValue={setFieldValue}
                     error={error.Telefono}
-                />
-                <FormInput
-                    field="Edad"
-                    value={Edad}
-                    setFieldValue={setFieldValue}
-                    error={error.Edad}
-                    type="number"
                 />
                 {children}
             </div>
@@ -462,27 +444,36 @@ const MapContent = ({ setLocations, locations, setSelectedLocation }) => {
 const TirthPage = ({ data, setData, error, children }) => {
     const [influencers, setInfluencers] = useState([]);
     const [groups, setGroups] = useState([]);
+    const [services, setServices] = useState([]);
 
     const { FechaInicio, FechaNacimiento } = data;
 
     useEffect(() => {
         const fn = async () => {
-            const [influencers, groupsProm] = await Promise.all([
+            const [influencers, groupsProm, servicesProm] = await Promise.all([
                 getInfluencers(),
                 getGroups(),
+                getServices(),
             ]);
-
-            setInfluencers(influencers);
-            setGroups(groupsProm);
-
+            
+            const servicesObj = {};
             const groupsObj = {};
 
             groupsProm.forEach(
                 (groupThis) => (groupsObj[groupThis.id] = false)
             );
 
-            if (!Object.keys(data.group).length)
-                setData({ ...data, group: groupsObj });
+            servicesProm.forEach(
+                (serviceThis) => (servicesObj[serviceThis.id] = false)
+            );
+
+            if (!Object.keys(data.service).length && !Object.keys(data.group).length)
+                setData({ ...data, service: servicesObj, group: groupsObj });
+
+            setInfluencers(influencers);
+            setGroups(groupsProm);
+            setServices(servicesProm);
+
         };
         fn();
 
@@ -505,7 +496,7 @@ const TirthPage = ({ data, setData, error, children }) => {
                     <div className="flex">
                         <FormInput
                             field="FechaNacimiento"
-                            value={FechaNacimiento}
+                            defaultValue={FechaNacimiento}
                             setFieldValue={setFieldValue}
                             error={error.FechaNacimiento}
                             type="date"
@@ -519,7 +510,7 @@ const TirthPage = ({ data, setData, error, children }) => {
                     <div className="flex">
                         <FormInput
                             field="FechaInicio"
-                            value={FechaInicio}
+                            defaultValue={FechaInicio}
                             setFieldValue={setFieldValue}
                             error={error.FechaInicio}
                             type="date"
@@ -556,40 +547,83 @@ const TirthPage = ({ data, setData, error, children }) => {
                         </select>
                     </div>
                 </div>
-                <div className="flex flex-col">
-                    <div className="flex">
-                        {error.group && (
-                            <div className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black relative my-3">
-                                X
-                            </div>
-                        )}
-                        <label className="text-lg font-bold mt-4">
-                            Grupos:
-                        </label>
+                <div className="flex justify-between">
+                    <div className="flex flex-col">
+                        <div className="flex">
+                            {error.group && (
+                                <div className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black relative my-3">
+                                    X
+                                </div>
+                            )}
+                            <label className="text-lg font-bold mt-4">
+                                Grupos:
+                            </label>
+                        </div>
+                        <ul className="ml-2 flex flex-col gap-1">
+                            {groups.map(({ id: groupId }) => (
+                                <li key={groupId}>
+                                    <label htmlFor={groupId}>{groupId}</label>
+                                    <input
+                                        type="checkbox"
+                                        id={groupId}
+                                        className="ml-2"
+                                        onChange={(e) => {
+                                            setData({
+                                                ...data,
+                                                group: {
+                                                    ...data.group,
+                                                    [groupId]:
+                                                        !data.group[
+                                                            e.target.id
+                                                        ],
+                                                },
+                                            });
+                                        }}
+                                        checked={data.group[groupId]}
+                                    />
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-                    <ul className="ml-2 flex flex-col gap-1">
-                        {groups.map(({ id: groupId }) => (
-                            <li key={groupId}>
-                                <label htmlFor={groupId}>{groupId}</label>
-                                <input
-                                    type="checkbox"
-                                    id={groupId}
-                                    className="ml-2"
-                                    onChange={(e) => {
-                                        setData({
-                                            ...data,
-                                            group: {
-                                                ...data.group,
-                                                [groupId]:
-                                                    !data.group[e.target.id],
-                                            },
-                                        });
-                                    }}
-                                    checked={data.group[groupId]}
-                                />
-                            </li>
-                        ))}
-                    </ul>
+                    <div className="flex flex-col">
+                        <div className="flex">
+                            {error.service && (
+                                <div className="text-center p-2 bg-red-700 rounded-lg mr-1 font-bold text-white border border-black relative my-3">
+                                    X
+                                </div>
+                            )}
+                            <label className="text-lg font-bold mt-4">
+                                Servicios:
+                            </label>
+                        </div>
+                        <ul className="ml-2 flex flex-col gap-1">
+                            {services.map(({ id: serviceId }) => (
+                                <li key={serviceId}>
+                                    <label htmlFor={serviceId}>
+                                        {serviceId}
+                                    </label>
+                                    <input
+                                        type="checkbox"
+                                        id={serviceId}
+                                        className="ml-2"
+                                        onChange={(e) => {
+                                            setData({
+                                                ...data,
+                                                service: {
+                                                    ...data.service,
+                                                    [serviceId]:
+                                                        !data.service[
+                                                            e.target.id
+                                                        ],
+                                                },
+                                            });
+                                        }}
+                                        checked={data.service[serviceId]}
+                                    />
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
             {children}
