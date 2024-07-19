@@ -20,7 +20,11 @@ import { PAGES_TYPES } from "../../types/";
 
 import FormInput from "./FormInput";
 
-export default function CreatePersonModal({ setCreatePersonModal }) {
+export default function CreatePersonModal({
+    setCreatePersonModal,
+    refreshPersons,
+    setAlert,
+}) {
     const [page, setPage] = useState(PAGES_TYPES.FIRST);
     const [data, setData] = useState({
         Nombre: "",
@@ -46,8 +50,8 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         const documentRegex = /^((\d{8})|(\d{10})|(\d{11})|(\d{6}-\d{5}))?$/;
 
         const errorFirstPage = {};
-        const newFechaNacimiento = new Date(data.FechaNacimiento);
-        const newFechaInicio = new Date(data.FechaInicio);
+        data["Fecha de Nacimiento"] = new Date(data.FechaNacimiento);
+        data["Fecha de Inicio"] = new Date(data.FechaInicio);
 
         if (!data.Nombre) errorFirstPage.Nombre = "Invalid Name";
 
@@ -72,10 +76,13 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
 
         const errorTirthPage = {};
 
-        if (!data.FechaNacimiento || Date.now() - newFechaNacimiento < 0)
+        if (
+            !data.FechaNacimiento ||
+            Date.now() - data["Fecha de Nacimiento"] < 0
+        )
             errorTirthPage.FechaNacimiento = "Invalid Birth Date";
 
-        if (!data.FechaInicio || Date.now() - newFechaInicio < 0)
+        if (!data.FechaInicio || Date.now() - data["Fecha de Inicio"] < 0)
             errorTirthPage.FechaInicio = "Invalid Init Date";
 
         if (!data.influencer) errorTirthPage.influencer = "Invalid Influencer";
@@ -90,10 +97,20 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
 
         setError({});
 
-        data.FechaInicio = newFechaInicio;
-        data.FechaNacimiento = newFechaNacimiento;
+        const res = createUser(data);
 
-        createUser(data);
+        if (!res) return;
+
+        setCreatePersonModal(false);
+        setTimeout(() => {
+            refreshPersons();
+            setAlert({
+                msg: `Se ha creado la persona ${data.Nombre} correctamente`,
+            });
+        }, 500);
+        setTimeout(() => {
+            setAlert({});
+        }, 3500);
     };
 
     const NextButton = ({ nextPage }) => (
@@ -455,7 +472,7 @@ const TirthPage = ({ data, setData, error, children }) => {
                 getGroups(),
                 getServices(),
             ]);
-            
+
             const servicesObj = {};
             const groupsObj = {};
 
@@ -467,13 +484,15 @@ const TirthPage = ({ data, setData, error, children }) => {
                 (serviceThis) => (servicesObj[serviceThis.id] = false)
             );
 
-            if (!Object.keys(data.service).length && !Object.keys(data.group).length)
+            if (
+                !Object.keys(data.service).length &&
+                !Object.keys(data.group).length
+            )
                 setData({ ...data, service: servicesObj, group: groupsObj });
 
             setInfluencers(influencers);
             setGroups(groupsProm);
             setServices(servicesProm);
-
         };
         fn();
 

@@ -1,13 +1,18 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Person, { PersonMobile } from "./Person";
 import Alert from "./Alert";
 import { ALERT_TYPES } from "../../types";
 import { deletePerson } from "../../firebase/firebaseDB";
 
-export default function Persons({ handleChangeOrder, persons, deleteMode }) {
-    const [alert, setAlert] = useState({});
-
+export default function Persons({
+    handleChangeOrder,
+    persons,
+    deleteMode,
+    refreshPersons,
+    alert,
+    setAlert,
+}) {
     useEffect(() => {
         if (typeof deleteMode == "boolean")
             setAlert({
@@ -20,18 +25,21 @@ export default function Persons({ handleChangeOrder, persons, deleteMode }) {
         setTimeout(() => {
             setAlert({});
         }, 3000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [deleteMode]);
 
-    const handleDeletePerson = (person) =>
-        setAlert(
-            Object.keys(deletePerson(person)).length != 0
-                ? {
-                      msg: `Se ha eliminado la persona ${person.Nombre} correctamente`,
-                      type: ALERT_TYPES.SUCCESS,
-                  }
-                : {}
-        );
+    const handleDeletePerson = (person) => {
+        const res = deletePerson(person);
 
+        if (!Object.keys(res).length != 0) return;
+
+        setAlert({
+            msg: `Se ha eliminado la persona ${person.Nombre} correctamente`,
+            type: ALERT_TYPES.SUCCESS,
+        });
+
+        refreshPersons();
+    };
     return (
         <div>
             <table className="md:table hidden">

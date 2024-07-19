@@ -12,17 +12,20 @@ export default function ListOfUsers({ children }) {
     const [filter, setFilter] = useState({ Nombre: "" });
     const [createPersonModal, setCreatePersonModal] = useState(false);
     const [deleteMode, setDeleteMode] = useState("No change");
+    const [alert, setAlert] = useState({});
 
     useEffect(() => {
-        const fn = async () => {
-            setPersons([]);
-
-            const persons = await getPersons({ order, filter });
-
-            setPersons(persons);
-        };
-        fn();
+        refreshPersons();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [order, filter]);
+
+    const refreshPersons = async () => {
+        setPersons([]);
+
+        const persons = await getPersons({ order, filter });
+
+        setPersons(persons);
+    };
 
     const handleChangeOrder = (e) => {
         const orderBy = e.target.id != "" ? e.target.id : "Nombre";
@@ -50,6 +53,9 @@ export default function ListOfUsers({ children }) {
                         persons={persons}
                         handleChangeOrder={handleChangeOrder}
                         deleteMode={deleteMode}
+                        refreshPersons={refreshPersons}
+                        alert={alert}
+                        setAlert={setAlert}
                     />
                 </section>
                 <div className="flex justify-between">
@@ -80,6 +86,9 @@ export default function ListOfUsers({ children }) {
                 {createPersonModal && (
                     <CreatePersonModal
                         setCreatePersonModal={setCreatePersonModal}
+                        refreshPersons={refreshPersons}
+                        alert={alert}
+                        setAlert={setAlert}
                     />
                 )}
             </section>

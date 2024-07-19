@@ -102,7 +102,17 @@ export async function getServices() {
 }
 
 export async function createUser(data) {
-    const { Documento, group, service, selectedLocation, FechaInicio, FechaNacimiento, influencer, ...payload } = data;
+    const {
+        Documento,
+        group,
+        service,
+        selectedLocation,
+        influencer,
+        FechaInicio,
+        FechaNacimiento,
+        ...payload } = data;
+
+    if (!FechaInicio && !FechaNacimiento) return;
 
     if (Object.values(data).reduce((a, c) => !c ? true : a, false)) return;
 
@@ -121,8 +131,6 @@ export async function createUser(data) {
         Grupos,
         Servicios,
         Influencer: doc(fs, `personas/${influencer}`),
-        "Fecha de Nacimiento": FechaNacimiento,
-        "Fecha de Inicio": FechaInicio
     });
 
     for (let i = 0; i < Grupos.length; i++) {
@@ -148,6 +156,8 @@ export async function createUser(data) {
             Miembros: membersService
         })
     }
+
+    return true;
 }
 
 export async function getEventsByRefs(eventsRefs) {
