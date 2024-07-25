@@ -15,6 +15,7 @@ import {
     getGroups,
     getInfluencers,
     getServices,
+    updateUser
 } from "../../firebase/firebaseDB";
 import { PAGES_TYPES } from "../../types";
 
@@ -77,7 +78,6 @@ export default function CreatePersonModal({
             if(Servicios) Servicios.forEach((s) => (newService[s.id] = true));
 
             setData({ ...data, group: newGroup, service: newService });
-            console.log(data.group);
         }
     }, [data, updatePerson, gAndSLoad]);
 
@@ -136,7 +136,7 @@ export default function CreatePersonModal({
 
         setError({});
 
-        const res = createUser(data);
+        const res = Object.keys(updatePerson).length != 0 ? updateUser(data) : createUser(data);
 
         if (!res) return;
 
@@ -144,7 +144,7 @@ export default function CreatePersonModal({
         setTimeout(() => {
             refreshPersons();
             setAlert({
-                msg: `Se ha creado la persona ${data.Nombre} correctamente`,
+                msg: `Se ha ${Object.keys(updatePerson).length != 0 ? "actualizado" : "creado"} la persona ${data.Nombre} correctamente`,
             });
         }, 500);
         setTimeout(() => {
