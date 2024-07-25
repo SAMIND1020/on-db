@@ -4,13 +4,14 @@ import { getPersons } from "../../firebase/firebaseDB";
 
 import FilterModal from "./FilterModal";
 import Persons from "./Persons";
-import CreatePersonModal from "./CreatePersonModal";
+import CorUPersonModal from "./CorUPersonModal";
 
 export default function ListOfUsers({ children }) {
     const [persons, setPersons] = useState([]);
     const [order, setOrder] = useState({ orderBy: "Nombre", type: "asc" });
     const [filter, setFilter] = useState({ Nombre: "" });
-    const [createPersonModal, setCreatePersonModal] = useState(false);
+    const [corUPersonModal, setCorUPersonModal] = useState(false);
+    const [updatePerson, setUpdatePerson] = useState({});
     const [deleteMode, setDeleteMode] = useState("No change");
     const [alert, setAlert] = useState({});
 
@@ -41,6 +42,11 @@ export default function ListOfUsers({ children }) {
         });
     };
 
+    const handleUpdatePerson = (person) => {
+        setCorUPersonModal(true);
+        setUpdatePerson(person);
+    };
+
     return (
         <>
             <section>
@@ -56,6 +62,7 @@ export default function ListOfUsers({ children }) {
                         refreshPersons={refreshPersons}
                         alert={alert}
                         setAlert={setAlert}
+                        handleUpdatePerson={handleUpdatePerson}
                     />
                 </section>
                 <div className="flex justify-between">
@@ -64,7 +71,7 @@ export default function ListOfUsers({ children }) {
                     <div className="flex gap-2">
                         <button
                             className="px-2 rounded-lg border-2 border-black text-xl font-bold mt-4 hover:bg-slate-500 transition-all"
-                            onClick={() => setCreatePersonModal(true)}
+                            onClick={() => setCorUPersonModal(true)}
                         >
                             {"+"}
                         </button>
@@ -83,12 +90,14 @@ export default function ListOfUsers({ children }) {
                     </div>
                 </div>
 
-                {createPersonModal && (
-                    <CreatePersonModal
-                        setCreatePersonModal={setCreatePersonModal}
+                {corUPersonModal && (
+                    <CorUPersonModal
+                        setCorUPersonModal={setCorUPersonModal}
                         refreshPersons={refreshPersons}
                         alert={alert}
                         setAlert={setAlert}
+                        updatePerson={updatePerson}
+                        setUpdatePerson={setUpdatePerson}
                     />
                 )}
             </section>

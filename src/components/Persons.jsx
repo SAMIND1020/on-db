@@ -12,6 +12,7 @@ export default function Persons({
     refreshPersons,
     alert,
     setAlert,
+    handleUpdatePerson
 }) {
     useEffect(() => {
         if (typeof deleteMode == "boolean")
@@ -25,7 +26,7 @@ export default function Persons({
         setTimeout(() => {
             setAlert({});
         }, 3000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [deleteMode]);
 
     const handleDeletePerson = (person) => {
@@ -70,26 +71,38 @@ export default function Persons({
                     {persons.length != 0 &&
                         persons.map((person) => (
                             <Person key={person.id} person={person}>
-                                {typeof deleteMode == "boolean" &&
-                                    deleteMode && (
-                                        <>
-                                            <button
-                                                className="py-2 my-3 px-1 ml-1 bg-red-700 hover:bg-red-800 text-white font-bold border border-black rounded-lg"
-                                                onClick={() =>
-                                                    setAlert({
-                                                        msg: `¿Desea eliminar la persona ${person.Nombre}?`,
-                                                        type: ALERT_TYPES.CONFIRM,
-                                                        handleConfirm: () =>
-                                                            handleDeletePerson(
-                                                                person
-                                                            ),
-                                                    })
-                                                }
-                                            >
-                                                Borrar
-                                            </button>
-                                        </>
-                                    )}
+                                <>
+                                    <td>
+                                        <button
+                                            className="px-1 border border-black rounded-lg text-2xl ml-1 hover:bg-slate-400"
+                                            onClick={() => {
+                                                handleUpdatePerson(person)
+                                            }}
+                                        >
+                                            ✎
+                                        </button>
+                                    </td>
+                                    {typeof deleteMode == "boolean" &&
+                                        deleteMode && (
+                                            <td>
+                                                <button
+                                                    className="py-2 my-3 px-1 ml-1 bg-red-700 hover:bg-red-800 text-white font-bold border border-black rounded-lg text-xs"
+                                                    onClick={() =>
+                                                        setAlert({
+                                                            msg: `¿Desea eliminar la persona ${person.Nombre}?`,
+                                                            type: ALERT_TYPES.CONFIRM,
+                                                            handleConfirm: () =>
+                                                                handleDeletePerson(
+                                                                    person
+                                                                ),
+                                                        })
+                                                    }
+                                                >
+                                                    Borrar
+                                                </button>
+                                            </td>
+                                        )}
+                                </>
                             </Person>
                         ))}
                 </tbody>
@@ -98,23 +111,32 @@ export default function Persons({
                 {persons.length != 0 &&
                     persons.map((person) => (
                         <PersonMobile key={person.id} person={person}>
-                            {typeof deleteMode == "boolean" && deleteMode && (
-                                <>
-                                    <button
-                                        className="p-1 my-1 h-fit ml-1 text-sm bg-red-700 hover:bg-red-800 text-white font-bold border border-black rounded-lg"
-                                        onClick={() =>
-                                            setAlert({
-                                                msg: `¿Desea eliminar la persona ${person.Nombre}?`,
-                                                type: ALERT_TYPES.CONFIRM,
-                                                handleConfirm: () =>
-                                                    handleDeletePerson(person),
-                                            })
-                                        }
-                                    >
-                                        Borrar
-                                    </button>
-                                </>
-                            )}
+                            <div className="flex items-center h-fit">
+                                <button
+                                    className="px-1 border border-black rounded-lg text-2xl ml-1 h-fit hover:bg-slate-400"
+                                    onClick={() => {}}
+                                >
+                                    ✎
+                                </button>
+                                {typeof deleteMode == "boolean" &&
+                                    deleteMode && (
+                                        <button
+                                            className="p-1 my-1 h-fit ml-1 text-sm bg-red-700 hover:bg-red-800 text-white font-bold border border-black rounded-lg"
+                                            onClick={() =>
+                                                setAlert({
+                                                    msg: `¿Desea eliminar la persona ${person.Nombre}?`,
+                                                    type: ALERT_TYPES.CONFIRM,
+                                                    handleConfirm: () =>
+                                                        handleDeletePerson(
+                                                            person
+                                                        ),
+                                                })
+                                            }
+                                        >
+                                            Borrar
+                                        </button>
+                                    )}
+                            </div>
                         </PersonMobile>
                     ))}
             </div>

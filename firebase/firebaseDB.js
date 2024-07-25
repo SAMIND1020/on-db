@@ -31,6 +31,7 @@ export async function getPersons({ order, filter, influencerRef }) {
     for (let i = 0; i < data.length; i++) {
         const { Influencer } = data[i];
         data[i].Influencer = Influencer ? (await getDoc(doc(fs, "personas", Influencer.id))).data() : { Nombre: "N/A" };
+        data[i].Influencer.id = Influencer?.id;
     }
 
     const filteredData = (

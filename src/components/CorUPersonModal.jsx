@@ -16,14 +16,16 @@ import {
     getInfluencers,
     getServices,
 } from "../../firebase/firebaseDB";
-import { PAGES_TYPES } from "../../types/";
+import { PAGES_TYPES } from "../../types";
 
 import FormInput from "./FormInput";
 
 export default function CreatePersonModal({
-    setCreatePersonModal,
+    setCorUPersonModal,
     refreshPersons,
     setAlert,
+    updatePerson,
+    setUpdatePerson,
 }) {
     const [page, setPage] = useState(PAGES_TYPES.FIRST);
     const [data, setData] = useState({
@@ -41,6 +43,43 @@ export default function CreatePersonModal({
         selectedLocation: {},
     });
     const [error, setError] = useState({});
+    const [gAndSLoad, setGAndSLoad] = useState(false);
+
+    useEffect(() => {
+        if (Object.keys(updatePerson).length != 0) {
+            const { Direccion, FechaNacimiento, FechaInicio, Influencer } =
+                updatePerson;
+
+            setData({
+                ...updatePerson,
+                selectedLocation: Direccion,
+                group: {},
+                service: {},
+                influencer: !Influencer.id ? "" : Influencer.id,
+                FechaNacimiento: new Date(FechaNacimiento)
+                    .toISOString()
+                    .split("T")[0],
+                FechaInicio: new Date(FechaInicio).toISOString().split("T")[0],
+            });
+        }
+    }, [updatePerson]);
+
+    useEffect(() => {
+        if (Object.keys(updatePerson).length != 0 && gAndSLoad) {
+            setGAndSLoad(false);
+
+            const { Grupos, Servicios } = updatePerson;
+
+            const newGroup = { ...data.group };
+            if(Grupos) Grupos.forEach((g) => (newGroup[g.id] = true));
+
+            const newService = { ...data.service };
+            if(Servicios) Servicios.forEach((s) => (newService[s.id] = true));
+
+            setData({ ...data, group: newGroup, service: newService });
+            console.log(data.group);
+        }
+    }, [data, updatePerson, gAndSLoad]);
 
     const handleCreatePerson = (e) => {
         e.preventDefault();
@@ -101,7 +140,7 @@ export default function CreatePersonModal({
 
         if (!res) return;
 
-        setCreatePersonModal(false);
+        setCorUPersonModal(false);
         setTimeout(() => {
             refreshPersons();
             setAlert({
@@ -141,7 +180,10 @@ export default function CreatePersonModal({
                 <div className="bg-white p-6 rounded-xl">
                     <button
                         className="p-1 border-2 border-black rounded-lg text-white text-sm bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer mb-3"
-                        onClick={() => setCreatePersonModal(false)}
+                        onClick={() => {
+                            setCorUPersonModal(false);
+                            setUpdatePerson({});
+                        }}
                     >
                         {"<"} Cerrar
                     </button>
@@ -181,6 +223,7 @@ export default function CreatePersonModal({
                                 data={data}
                                 setData={setData}
                                 error={error}
+                                setGAndSLoad={setGAndSLoad}
                             >
                                 <div className="flex justify-between mt-3">
                                     <div></div>
@@ -458,7 +501,7 @@ const MapContent = ({ setLocations, locations, setSelectedLocation }) => {
     );
 };
 
-const TirthPage = ({ data, setData, error, children }) => {
+const TirthPage = ({ data, setData, error, children, setGAndSLoad }) => {
     const [influencers, setInfluencers] = useState([]);
     const [groups, setGroups] = useState([]);
     const [services, setServices] = useState([]);
@@ -493,6 +536,8 @@ const TirthPage = ({ data, setData, error, children }) => {
             setInfluencers(influencers);
             setGroups(groupsProm);
             setServices(servicesProm);
+
+            setGAndSLoad(true);
         };
         fn();
 
