@@ -1,14 +1,14 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 
-import Alert from "./Alert";
-import { PersonMobile } from "./Person";
 import {
     getGroupMembers,
     updateInscribedPersons,
-} from "../../firebase/firebaseDB";
+} from "../../../firebase/firebaseDB";
 
-import { ALERT_TYPES } from "../../types";
+import { ALERT_TYPES } from "../../../types";
+import Alert from "../Alert";
+import { PersonMobile } from "../Person";
 
 export default function ViewInscribedModal({
     e,

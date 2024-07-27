@@ -12,7 +12,8 @@ export default function Persons({
     refreshPersons,
     alert,
     setAlert,
-    handleUpdatePerson
+    handleUpdatePerson,
+    editButton
 }) {
     useEffect(() => {
         if (typeof deleteMode == "boolean")
@@ -72,16 +73,21 @@ export default function Persons({
                         persons.map((person) => (
                             <Person key={person.id} person={person}>
                                 <>
-                                    <td>
-                                        <button
-                                            className="px-1 border border-black rounded-lg text-2xl ml-1 hover:bg-slate-400"
-                                            onClick={() => {
-                                                handleUpdatePerson(person)
-                                            }}
-                                        >
-                                            ✎
-                                        </button>
-                                    </td>
+                                    {typeof editButton == "boolean" &&
+                                        editButton && (
+                                            <td>
+                                                <button
+                                                    className="px-1 border border-black rounded-lg text-2xl ml-1 hover:bg-slate-400"
+                                                    onClick={() => {
+                                                        handleUpdatePerson(
+                                                            person
+                                                        );
+                                                    }}
+                                                >
+                                                    ✎
+                                                </button>
+                                            </td>
+                                        )}
                                     {typeof deleteMode == "boolean" &&
                                         deleteMode && (
                                             <td>
@@ -112,12 +118,15 @@ export default function Persons({
                     persons.map((person) => (
                         <PersonMobile key={person.id} person={person}>
                             <div className="flex items-center h-fit">
-                                <button
-                                    className="px-1 border border-black rounded-lg text-2xl ml-1 h-fit hover:bg-slate-400"
-                                    onClick={() => {}}
-                                >
-                                    ✎
-                                </button>
+                                {typeof editButton == "boolean" &&
+                                    editButton && (
+                                        <button
+                                            className="px-1 border border-black rounded-lg text-2xl ml-1 h-fit hover:bg-slate-400"
+                                            onClick={() => {}}
+                                        >
+                                            ✎
+                                        </button>
+                                    )}
                                 {typeof deleteMode == "boolean" &&
                                     deleteMode && (
                                         <button

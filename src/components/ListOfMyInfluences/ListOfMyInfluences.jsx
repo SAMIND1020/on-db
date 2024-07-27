@@ -1,16 +1,16 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
+
 import {
     getEventsByRefs,
     getGroups,
     getInfluencerRef,
     getPersons,
-} from "../../firebase/firebaseDB";
-
-import FilterModal from "./FilterModal";
-import Persons from './Persons'
+} from "../../../firebase/firebaseDB";
+import { EVENTS_STATUS } from "../../../types";
+import FilterModal from "../FilterModal";
+import Persons from "../Persons";
 import Event from "./Event";
-import { EVENTS_STATUS } from "../../types";
 
 export default function ListOfMyInfluences({ children, influencer }) {
     const [events, setEvents] = useState([]);
@@ -21,6 +21,7 @@ export default function ListOfMyInfluences({ children, influencer }) {
     const [order, setOrder] = useState({ orderBy: "Nombre", type: "asc" });
     const [persons, setPersons] = useState([]);
     const [viewAllEventsModal, setViewAllEventsModal] = useState(false);
+    const [alert, setAlert] = useState({});
 
     useEffect(() => {
         const fn = async () => {
@@ -87,7 +88,12 @@ export default function ListOfMyInfluences({ children, influencer }) {
                 <div className="w-full h-8">
                     <FilterModal setFilter={setFilter} />
                 </div>
-                <Persons handleChangeOrder={handleChangeOrder} persons={persons} />
+                <Persons
+                    handleChangeOrder={handleChangeOrder}
+                    persons={persons}
+                    alert={alert}
+                    setAlert={setAlert}
+                />
             </section>
             {viewAllEventsModal && (
                 <section className="h-full w-full opacity-90 bg-black top-0 left-0 z-10 absolute">

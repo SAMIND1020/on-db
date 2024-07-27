@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import { EVENTS_STATUS } from "../../types";
+import { EVENTS_STATUS } from "../../../types";
 import ViewInscribedModal from "./ViewInscribedModal";
 
 export default function Event({ e, updateEvent }) {

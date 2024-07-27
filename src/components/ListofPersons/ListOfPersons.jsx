@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { getPersons } from "../../firebase/firebaseDB";
 
-import FilterModal from "./FilterModal";
-import Persons from "./Persons";
+import { getPersons } from "../../../firebase/firebaseDB";
+
+import FilterModal from "../FilterModal";
+import Persons from "../Persons";
 import CorUPersonModal from "./CorUPersonModal";
 
 export default function ListOfUsers({ children }) {
@@ -63,6 +64,7 @@ export default function ListOfUsers({ children }) {
                         alert={alert}
                         setAlert={setAlert}
                         handleUpdatePerson={handleUpdatePerson}
+                        editButton={true}
                     />
                 </section>
                 <div className="flex justify-between">

@@ -15,11 +15,11 @@ import {
     getGroups,
     getInfluencers,
     getServices,
-    updateUser
-} from "../../firebase/firebaseDB";
-import { PAGES_TYPES } from "../../types";
+    updateUser,
+} from "../../../firebase/firebaseDB";
+import { PAGES_TYPES } from "../../../types";
 
-import FormInput from "./FormInput";
+import FormInput from "../FormInput";
 
 export default function CreatePersonModal({
     setCorUPersonModal,
@@ -72,10 +72,10 @@ export default function CreatePersonModal({
             const { Grupos, Servicios } = updatePerson;
 
             const newGroup = { ...data.group };
-            if(Grupos) Grupos.forEach((g) => (newGroup[g.id] = true));
+            if (Grupos) Grupos.forEach((g) => (newGroup[g.id] = true));
 
             const newService = { ...data.service };
-            if(Servicios) Servicios.forEach((s) => (newService[s.id] = true));
+            if (Servicios) Servicios.forEach((s) => (newService[s.id] = true));
 
             setData({ ...data, group: newGroup, service: newService });
         }
@@ -136,7 +136,10 @@ export default function CreatePersonModal({
 
         setError({});
 
-        const res = Object.keys(updatePerson).length != 0 ? updateUser(data) : createUser(data);
+        const res =
+            Object.keys(updatePerson).length != 0
+                ? updateUser(data)
+                : createUser(data);
 
         if (!res) return;
 
@@ -144,7 +147,11 @@ export default function CreatePersonModal({
         setTimeout(() => {
             refreshPersons();
             setAlert({
-                msg: `Se ha ${Object.keys(updatePerson).length != 0 ? "actualizado" : "creado"} la persona ${data.Nombre} correctamente`,
+                msg: `Se ha ${
+                    Object.keys(updatePerson).length != 0
+                        ? "actualizado"
+                        : "creado"
+                } la persona ${data.Nombre} correctamente`,
             });
         }, 500);
         setTimeout(() => {
@@ -187,7 +194,11 @@ export default function CreatePersonModal({
                     >
                         {"<"} Cerrar
                     </button>
-                    <h1 className="text-3xl font-black mb-5">Crear Persona</h1>
+                    <h1 className="text-3xl font-black mb-5">
+                        {Object.keys(updatePerson).length != 0
+                            ? "Actualizar Persona"
+                            : "Crear Persona"}
+                    </h1>
                     <form onSubmit={handleCreatePerson}>
                         {page === PAGES_TYPES.FIRST ? (
                             <FirstPage
@@ -236,7 +247,9 @@ export default function CreatePersonModal({
                                             className={
                                                 "font-black p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
                                             }
-                                            value="Inscribir Persona"
+                                            value={Object.keys(updatePerson).length != 0
+                                                ? "Actualizar Persona"
+                                                : "Inscribir Persona"}
                                         />
                                     </div>
                                 </div>
