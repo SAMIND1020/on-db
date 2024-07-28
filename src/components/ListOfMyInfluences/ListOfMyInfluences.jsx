@@ -11,6 +11,7 @@ import { EVENTS_STATUS } from "../../../types";
 import FilterModal from "../FilterModal";
 import Persons from "../Persons";
 import Event from "./Event";
+import CorUEventModal from "./CorUEventModal";
 
 export default function ListOfMyInfluences({ children, influencer }) {
     const [events, setEvents] = useState([]);
@@ -21,7 +22,9 @@ export default function ListOfMyInfluences({ children, influencer }) {
     const [order, setOrder] = useState({ orderBy: "Nombre", type: "asc" });
     const [persons, setPersons] = useState([]);
     const [viewAllEventsModal, setViewAllEventsModal] = useState(false);
+    const [corUEventsModal, setCorUEventsModal] = useState(false);
     const [alert, setAlert] = useState({});
+    const [updateEvent, setUpdateEvent] = useState({});
 
     useEffect(() => {
         const fn = async () => {
@@ -75,7 +78,7 @@ export default function ListOfMyInfluences({ children, influencer }) {
         });
     };
 
-    const updateEvent = () => {
+    const refreshEvents = () => {
         const fn = async () => setEvents(await getEventsByRefs(group.Eventos));
 
         if (Object.keys(group).length) fn();
@@ -130,7 +133,7 @@ export default function ListOfMyInfluences({ children, influencer }) {
                                     events.map((e) => (
                                         <div key={e.id} className="mb-4">
                                             <Event
-                                                updateEvent={updateEvent}
+                                                updateEvent={refreshEvents}
                                                 e={e}
                                             />
                                         </div>
@@ -142,6 +145,18 @@ export default function ListOfMyInfluences({ children, influencer }) {
                         </div>
                     </div>
                 </section>
+            )}
+            {corUEventsModal && (
+                <CorUEventModal
+                    refreshEvents={refreshEvents}
+                    setAlert={setAlert}
+                    setCorUEventModal={setCorUEventsModal}
+                    updateEvent={updateEvent}
+                    setUpdateEvent={setUpdateEvent}
+                    setGroup={setGroup}
+                    groups={groups}
+                    group={group}
+                />
             )}
             <section className="absolute bottom-16 left-0 border-t-2 border-black pt-6 w-screen pl-5 pr-5">
                 <div className="flex justify-between">
@@ -179,7 +194,7 @@ export default function ListOfMyInfluences({ children, influencer }) {
                                     )
                                     .map((e) => (
                                         <Event
-                                            updateEvent={updateEvent}
+                                            updateEvent={refreshEvents}
                                             key={e.id}
                                             e={e}
                                         />
@@ -189,7 +204,13 @@ export default function ListOfMyInfluences({ children, influencer }) {
                             )}
                         </div>
                     </div>
-                    <div>
+                    <div className="flex h-fit">
+                        <button
+                            className=" px-1 mr-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer hover:bg-slate-400 transition-all"
+                            onClick={() => setCorUEventsModal(true)}
+                        >
+                            +
+                        </button>
                         <button
                             className=" px-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer hover:bg-slate-400 transition-all"
                             onClick={() => setViewAllEventsModal(true)}

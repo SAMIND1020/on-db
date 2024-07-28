@@ -353,3 +353,7 @@ export async function deletePerson(person) {
 
     return person;
 }
+
+export async function createEvent() {}
+
+export async function updateEvent() {}
