@@ -354,6 +354,32 @@ export async function deletePerson(person) {
     return person;
 }
 
-export async function createEvent() {}
+export async function createEvent(event) {
+    const { group, FechaInicio, FechaFinalizacion, ...payload } = event;
 
-export async function updateEvent() {}
+    if (!FechaInicio && !FechaFinalizacion) return;
+
+    const Grupo = doc(fs, `grupos/${group.id}`);
+
+    const generarId = () => Math.random().toString(36).substr(2, 10);
+    const ID = generarId();
+
+    await setDoc(doc(fs, "eventos", ID), {
+        ...payload,
+        Grupo,
+        Asistencias: []
+    });
+
+
+    const eventsGroup = group.Eventos;
+
+    eventsGroup.push(doc(fs, "eventos", ID))
+
+    await updateDoc(Grupo, {
+        Eventos: eventsGroup
+    })
+
+    return true;
+}
+
+export async function updateEvent() { }

@@ -24,13 +24,13 @@ export default function CreatePersonModal({
         Nombre: "",
         FechaInicio: "",
         FechaFinalizacion: "",
+        group,
     });
     const [error, setError] = useState({});
 
     useEffect(() => {
         if (Object.keys(updateEvent).length != 0) {
-            const { FechaFinalizacion, FechaInicio} =
-                updateEvent;
+            const { FechaFinalizacion, FechaInicio } = updateEvent;
 
             setData({
                 ...updateEvent,
@@ -42,7 +42,7 @@ export default function CreatePersonModal({
         }
     }, [updateEvent]);
 
-    const handleCreatePerson = (e) => {
+    const handleCreateEvent = (e) => {
         e.preventDefault();
 
         const errorFirstPage = {};
@@ -50,21 +50,21 @@ export default function CreatePersonModal({
         data["Fecha de Inicio"] = new Date(data.FechaInicio);
 
         if (!data.Nombre) errorFirstPage.Nombre = "Invalid Name";
-        
+
         if (
             !data.FechaFinalizacion ||
-            Date.now() - data["Fecha de Finalizacion"] < 0
+            Date.now() - data["Fecha de Finalizacion"] > 0
         )
-        errorFirstPage.FechaFinalizacion = "Invalid End Date";
-        
-        if (!data.FechaInicio || Date.now() - data["Fecha de Inicio"] < 0)
+            errorFirstPage.FechaFinalizacion = "Invalid End Date";
+
+        if (!data.FechaInicio || Date.now() - data["Fecha de Inicio"] > 0)
             errorFirstPage.FechaInicio = "Invalid Init Date";
 
         if (Object.keys(errorFirstPage).length) {
             setError({ ...errorFirstPage });
             return setPage(PAGES_TYPES.FIRST);
         }
-        
+
         setError({});
 
         const res =
@@ -82,7 +82,7 @@ export default function CreatePersonModal({
                     Object.keys(updateEvent).length != 0
                         ? "actualizado"
                         : "creado"
-                } la persona ${data.Nombre} correctamente`,
+                } el evento ${data.Nombre} correctamente`,
             });
         }, 500);
         setTimeout(() => {
@@ -123,7 +123,7 @@ export default function CreatePersonModal({
                             </option>
                         ))}
                     </select>
-                    <form onSubmit={handleCreatePerson}>
+                    <form onSubmit={handleCreateEvent}>
                         {page === PAGES_TYPES.FIRST ? (
                             <FirstPage
                                 data={data}
@@ -182,7 +182,7 @@ const FirstPage = ({ setData, data, error, children }) => {
                     </label>
                     <div className="flex">
                         <FormInput
-                            field="fechainicio"
+                            field="FechaInicio"
                             defaultValue={FechaInicio}
                             setFieldValue={setFieldValue}
                             error={error.FechaInicio}
@@ -196,7 +196,7 @@ const FirstPage = ({ setData, data, error, children }) => {
                     </label>
                     <div className="flex">
                         <FormInput
-                            field="fechafinalizacion"
+                            field="FechaFinalizacion"
                             defaultValue={FechaFinalizacion}
                             setFieldValue={setFieldValue}
                             error={error.FechaFinalizacion}
