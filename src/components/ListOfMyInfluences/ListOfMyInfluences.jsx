@@ -6,9 +6,11 @@ import {
     getGroups,
     getInfluencerRef,
     getPersons,
+    deleteEvent
 } from "../../../firebase/firebaseDB";
-import { EVENTS_STATUS } from "../../../types";
+import { EVENTS_STATUS, ALERT_TYPES } from "../../../types";
 import FilterModal from "../FilterModal";
+import Alert from "../Alert";
 import Persons from "../Persons";
 import Event from "./Event";
 import CorUEventModal from "./CorUEventModal";
@@ -23,8 +25,8 @@ export default function ListOfMyInfluences({ children, influencer }) {
     const [persons, setPersons] = useState([]);
     const [viewAllEventsModal, setViewAllEventsModal] = useState(false);
     const [corUEventsModal, setCorUEventsModal] = useState(false);
-    const [alert, setAlert] = useState({});
     const [updateEvent, setUpdateEvent] = useState({});
+    const [alert, setAlert] = useState({});
 
     useEffect(() => {
         const fn = async () => {
@@ -84,6 +86,24 @@ export default function ListOfMyInfluences({ children, influencer }) {
         if (Object.keys(group).length) fn();
     };
 
+    const handleUpdateEvent = (e) => {
+        setCorUEventsModal(true);
+        setUpdateEvent(e);
+    };
+
+    const handleDeleteEvent = (e) => {
+        const res = deleteEvent(e);
+
+        if (!Object.keys(res).length != 0) return;
+
+        setAlert({
+            msg: `Se ha eliminado el evento ${e.Nombre} correctamente`,
+            type: ALERT_TYPES.SUCCESS,
+        });
+
+        refreshEvents();
+    };
+
     return (
         <>
             <section>
@@ -94,8 +114,7 @@ export default function ListOfMyInfluences({ children, influencer }) {
                 <Persons
                     handleChangeOrder={handleChangeOrder}
                     persons={persons}
-                    alert={alert}
-                    setAlert={setAlert}
+                    setAlert={() => {}}
                 />
             </section>
             {viewAllEventsModal && (
@@ -135,7 +154,26 @@ export default function ListOfMyInfluences({ children, influencer }) {
                                             <Event
                                                 updateEvent={refreshEvents}
                                                 e={e}
-                                            />
+                                                handleUpdateEvent={
+                                                    handleUpdateEvent
+                                                }
+                                            >
+                                                <p
+                                                    className="ml-1 px-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer hover:bg-slate-400 transition-all"
+                                                    onClick={() =>
+                                                        setAlert({
+                                                            msg: `¿Desea eliminar el evento ${e.Nombre}?`,
+                                                            type: ALERT_TYPES.CONFIRM,
+                                                            handleConfirm: () =>
+                                                                handleDeleteEvent(
+                                                                    e
+                                                                ),
+                                                        })
+                                                    }
+                                                >
+                                                    x
+                                                </p>
+                                            </Event>
                                         </div>
                                     ))
                                 ) : (
@@ -143,6 +181,31 @@ export default function ListOfMyInfluences({ children, influencer }) {
                                 )}
                             </div>
                         </div>
+                    </div>
+                    <div>
+                        {Object.keys(alert).length != 0 && (
+                            <div className="fixed top-10 sm:left-[40dvw] left-[30dvw]">
+                                <div className="relative">
+                                    <section className="w-full z-10 sticky">
+                                        <div className="flex items-center justify-center">
+                                            <div
+                                                className={`font-bold p-2 rounded-xl border-2 ${
+                                                    alert.type ==
+                                                    ALERT_TYPES.SUCCESS
+                                                        ? "bg-green-700 border-green-900"
+                                                        : "bg-indigo-700 border-indigo-900"
+                                                }`}
+                                            >
+                                                <Alert
+                                                    alert={alert}
+                                                    setAlert={setAlert}
+                                                />
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </section>
             )}
@@ -197,6 +260,9 @@ export default function ListOfMyInfluences({ children, influencer }) {
                                             updateEvent={refreshEvents}
                                             key={e.id}
                                             e={e}
+                                            handleUpdateEvent={
+                                                handleUpdateEvent
+                                            }
                                         />
                                     ))
                             ) : (

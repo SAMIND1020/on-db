@@ -382,4 +382,28 @@ export async function createEvent(event) {
     return true;
 }
 
-export async function updateEvent() { }
+export async function updateEvent(event) {
+    const { id, FechaFinalizacion, FechaInicio, status, ...payload } = event;
+
+    if (!FechaFinalizacion && !FechaInicio && !status) return;
+
+    await updateDoc(doc(fs, "eventos", id), {
+        ...payload
+    });
+
+    return true;
+}
+
+export async function deleteEvent(event) {
+    // await deleteDoc(doc(fs, "eventos", event.id))
+
+    const eventsGroup = (await getDoc(event.Grupo)).data().Eventos;
+
+    const updatedEventsGroup = eventsGroup.filter(e => e.id != event.id)
+
+    await updateDoc(event.Group, {
+        Eventos: updatedEventsGroup
+    })
+
+    return true;
+}

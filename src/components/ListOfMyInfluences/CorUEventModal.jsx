@@ -76,14 +76,14 @@ export default function CreatePersonModal({
 
         setCorUEventModal(false);
         setTimeout(() => {
-            refreshEvents();
             setAlert({
                 msg: `Se ha ${
                     Object.keys(updateEvent).length != 0
-                        ? "actualizado"
-                        : "creado"
+                    ? "actualizado"
+                    : "creado"
                 } el evento ${data.Nombre} correctamente`,
             });
+            refreshEvents();
         }, 500);
         setTimeout(() => {
             setAlert({});
@@ -108,21 +108,25 @@ export default function CreatePersonModal({
                             ? "Actualizar Evento"
                             : "Crear Evento"}
                     </h1>
-                    <select
-                        className="border-2 border-black rounded-lg p-1 mb-5"
-                        onChange={(e) =>
-                            setGroup(
-                                groups.filter((g) => g.id == e.target.value)[0]
-                            )
-                        }
-                        value={group.id}
-                    >
-                        {groups.map((g) => (
-                            <option value={g.id} key={g.id}>
-                                {g.id}
-                            </option>
-                        ))}
-                    </select>
+                    {!Object.keys(updateEvent).length && (
+                        <select
+                            className="border-2 border-black rounded-lg p-1 mb-5"
+                            onChange={(e) =>
+                                setGroup(
+                                    groups.filter(
+                                        (g) => g.id == e.target.value
+                                    )[0]
+                                )
+                            }
+                            value={group.id}
+                        >
+                            {groups.map((g) => (
+                                <option value={g.id} key={g.id}>
+                                    {g.id}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                     <form onSubmit={handleCreateEvent}>
                         {page === PAGES_TYPES.FIRST ? (
                             <FirstPage
@@ -177,13 +181,13 @@ const FirstPage = ({ setData, data, error, children }) => {
                     error={error.Nombre}
                 />
                 <div className="flex flex-col font-bold">
-                    <label className="text-lg" htmlFor="fechainicio">
+                    <label className="text-lg" htmlFor="FechaInicio">
                         Fecha Inicio:
                     </label>
                     <div className="flex">
                         <FormInput
                             field="FechaInicio"
-                            defaultValue={FechaInicio}
+                            value={FechaInicio}
                             setFieldValue={setFieldValue}
                             error={error.FechaInicio}
                             type="date"
@@ -191,13 +195,13 @@ const FirstPage = ({ setData, data, error, children }) => {
                     </div>
                 </div>
                 <div className="flex flex-col font-bold">
-                    <label className="text-lg" htmlFor="fechafinalizacion">
+                    <label className="text-lg" htmlFor="FechaFinalizacion">
                         Fecha Finalizacion:
                     </label>
                     <div className="flex">
                         <FormInput
                             field="FechaFinalizacion"
-                            defaultValue={FechaFinalizacion}
+                            value={FechaFinalizacion}
                             setFieldValue={setFieldValue}
                             error={error.FechaFinalizacion}
                             type="date"

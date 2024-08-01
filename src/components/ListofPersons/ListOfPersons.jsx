@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 
 import { getPersons } from "../../../firebase/firebaseDB";
+import { ALERT_TYPES } from "../../../types";
+import Alert from "../Alert";
 
 import FilterModal from "../FilterModal";
 import Persons from "../Persons";
@@ -65,7 +67,33 @@ export default function ListOfUsers({ children }) {
                         setAlert={setAlert}
                         handleUpdatePerson={handleUpdatePerson}
                         editButton={true}
-                    />
+                    >
+                        <div>
+                            {Object.keys(alert).length != 0 && (
+                                <div className="fixed top-10 sm:left-[40dvw] left-[30dvw]">
+                                    <div className="relative">
+                                        <section className="w-full z-10 sticky">
+                                            <div className="flex items-center justify-center">
+                                                <div
+                                                    className={`font-bold p-2 rounded-xl border-2 ${
+                                                        alert.type ==
+                                                        ALERT_TYPES.SUCCESS
+                                                            ? "bg-green-700 border-green-900"
+                                                            : "bg-indigo-700 border-indigo-900"
+                                                    }`}
+                                                >
+                                                    <Alert
+                                                        alert={alert}
+                                                        setAlert={setAlert}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </Persons>
                 </section>
                 <div className="flex justify-between">
                     <div></div>
