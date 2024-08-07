@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import { EVENTS_STATUS } from "../../types";
+import { EVENTS_STATUS } from "../../../types";
 import ViewInscribedModal from "./ViewInscribedModal";
 
-export default function Event({ e, updateEvent }) {
+export default function Event({ e, updateEvent, handleUpdateEvent, children }) {
     const [viewInscribedModal, setViewInscribedModal] = useState(false);
 
     return (
@@ -31,24 +31,33 @@ export default function Event({ e, updateEvent }) {
                     {e.status}
                 </span>
             </p>
-            {e.status == EVENTS_STATUS.SOON ? (
-                <p
-                    className=" px-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer"
-                    onClick={() => setViewInscribedModal(true)}
-                >
-                    Ver Inscritos
-                </p>
-            ) : (
-                e["Fecha de Finalizacion"].toDate().getTime() - Date.now() <
-                    21600000 && (
+            <div className="flex">
+                {e.status == EVENTS_STATUS.SOON ? (
                     <p
-                        className=" px-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer"
+                        className=" px-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer hover:bg-slate-400 transition-all"
                         onClick={() => setViewInscribedModal(true)}
                     >
-                        Ver Asistencias
+                        Ver Inscritos
                     </p>
-                )
-            )}
+                ) : (
+                    e["Fecha de Finalizacion"].toDate().getTime() - Date.now() <
+                        21600000 && (
+                        <p
+                            className=" px-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer hover:bg-slate-400 transition-all"
+                            onClick={() => setViewInscribedModal(true)}
+                        >
+                            Ver Asistencias
+                        </p>
+                    )
+                )}
+                <p
+                    className="ml-1 px-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer hover:bg-slate-400 transition-all"
+                    onClick={() => handleUpdateEvent(e)}
+                >
+                    ✎
+                </p>
+                {children}
+            </div>
             {viewInscribedModal && (
                 <ViewInscribedModal
                     e={e}

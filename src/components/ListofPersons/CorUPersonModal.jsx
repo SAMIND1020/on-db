@@ -15,12 +15,19 @@ import {
     getGroups,
     getInfluencers,
     getServices,
-} from "../../firebase/firebaseDB";
-import { PAGES_TYPES } from "../../types/";
+    updateUser,
+} from "../../../firebase/firebaseDB";
+import { PAGES_TYPES } from "../../../types";
 
-import FormInput from "./FormInput";
+import FormInput from "../FormInput";
 
-export default function CreatePersonModal({ setCreatePersonModal }) {
+export default function CreatePersonModal({
+    setCorUPersonModal,
+    refreshPersons,
+    setAlert,
+    updatePerson,
+    setUpdatePerson,
+}) {
     const [page, setPage] = useState(PAGES_TYPES.FIRST);
     const [data, setData] = useState({
         Nombre: "",
@@ -37,6 +44,42 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         selectedLocation: {},
     });
     const [error, setError] = useState({});
+    const [gAndSLoad, setGAndSLoad] = useState(false);
+
+    useEffect(() => {
+        if (Object.keys(updatePerson).length != 0) {
+            const { Direccion, FechaNacimiento, FechaInicio, Influencer } =
+                updatePerson;
+
+            setData({
+                ...updatePerson,
+                selectedLocation: Direccion,
+                group: {},
+                service: {},
+                influencer: !Influencer.id ? "" : Influencer.id,
+                FechaNacimiento: new Date(FechaNacimiento)
+                    .toISOString()
+                    .split("T")[0],
+                FechaInicio: new Date(FechaInicio).toISOString().split("T")[0],
+            });
+        }
+    }, [updatePerson]);
+
+    useEffect(() => {
+        if (Object.keys(updatePerson).length != 0 && gAndSLoad) {
+            setGAndSLoad(false);
+
+            const { Grupos, Servicios } = updatePerson;
+
+            const newGroup = { ...data.group };
+            if (Grupos) Grupos.forEach((g) => (newGroup[g.id] = true));
+
+            const newService = { ...data.service };
+            if (Servicios) Servicios.forEach((s) => (newService[s.id] = true));
+
+            setData({ ...data, group: newGroup, service: newService });
+        }
+    }, [data, updatePerson, gAndSLoad]);
 
     const handleCreatePerson = (e) => {
         e.preventDefault();
@@ -48,6 +91,12 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
         const errorFirstPage = {};
         const newFechaNacimiento = new Date(data.FechaNacimiento);
         const newFechaInicio = new Date(data.FechaInicio);
+
+        newFechaNacimiento.setDate(newFechaNacimiento.getDate() + 1);
+        newFechaInicio.setDate(newFechaInicio.getDate() + 1);
+
+        data["Fecha de Inicio"] = newFechaInicio;
+        data["Fecha de Nacimiento"] = newFechaNacimiento;
 
         if (!data.Nombre) errorFirstPage.Nombre = "Invalid Name";
 
@@ -72,13 +121,14 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
 
         const errorTirthPage = {};
 
-        if (!data.FechaNacimiento || Date.now() - newFechaNacimiento < 0)
+        if (
+            !data.FechaNacimiento ||
+            Date.now() - data["Fecha de Nacimiento"] < 0
+        )
             errorTirthPage.FechaNacimiento = "Invalid Birth Date";
 
-        if (!data.FechaInicio || Date.now() - newFechaInicio < 0)
+        if (!data.FechaInicio || Date.now() - data["Fecha de Inicio"] < 0)
             errorTirthPage.FechaInicio = "Invalid Init Date";
-
-        if (!data.influencer) errorTirthPage.influencer = "Invalid Influencer";
 
         if (!Object.values(data.group).reduce((a, c) => (a ? a : c), false))
             errorTirthPage.group = "select at least one group";
@@ -90,10 +140,28 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
 
         setError({});
 
-        data.FechaInicio = newFechaInicio;
-        data.FechaNacimiento = newFechaNacimiento;
+        const res =
+            Object.keys(updatePerson).length != 0
+                ? updateUser(data)
+                : createUser(data);
 
-        createUser(data);
+        if (!res) return;
+
+        setCorUPersonModal(false);
+        setUpdatePerson({});
+        setTimeout(() => {
+            refreshPersons();
+            setAlert({
+                msg: `Se ha ${
+                    Object.keys(updatePerson).length != 0
+                        ? "actualizado"
+                        : "creado"
+                } la persona ${data.Nombre} correctamente`,
+            });
+        }, 500);
+        setTimeout(() => {
+            setAlert({});
+        }, 3500);
     };
 
     const NextButton = ({ nextPage }) => (
@@ -124,11 +192,18 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
                 <div className="bg-white p-6 rounded-xl">
                     <button
                         className="p-1 border-2 border-black rounded-lg text-white text-sm bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer mb-3"
-                        onClick={() => setCreatePersonModal(false)}
+                        onClick={() => {
+                            setCorUPersonModal(false);
+                            setUpdatePerson({});
+                        }}
                     >
                         {"<"} Cerrar
                     </button>
-                    <h1 className="text-3xl font-black mb-5">Crear Persona</h1>
+                    <h1 className="text-3xl font-black mb-5">
+                        {Object.keys(updatePerson).length != 0
+                            ? "Actualizar Persona"
+                            : "Crear Persona"}
+                    </h1>
                     <form onSubmit={handleCreatePerson}>
                         {page === PAGES_TYPES.FIRST ? (
                             <FirstPage
@@ -164,6 +239,7 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
                                 data={data}
                                 setData={setData}
                                 error={error}
+                                setGAndSLoad={setGAndSLoad}
                             >
                                 <div className="flex justify-between mt-3">
                                     <div></div>
@@ -176,7 +252,12 @@ export default function CreatePersonModal({ setCreatePersonModal }) {
                                             className={
                                                 "font-black p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
                                             }
-                                            value="Inscribir Persona"
+                                            value={
+                                                Object.keys(updatePerson)
+                                                    .length != 0
+                                                    ? "Actualizar Persona"
+                                                    : "Inscribir Persona"
+                                            }
                                         />
                                     </div>
                                 </div>
@@ -441,7 +522,7 @@ const MapContent = ({ setLocations, locations, setSelectedLocation }) => {
     );
 };
 
-const TirthPage = ({ data, setData, error, children }) => {
+const TirthPage = ({ data, setData, error, children, setGAndSLoad }) => {
     const [influencers, setInfluencers] = useState([]);
     const [groups, setGroups] = useState([]);
     const [services, setServices] = useState([]);
@@ -455,7 +536,7 @@ const TirthPage = ({ data, setData, error, children }) => {
                 getGroups(),
                 getServices(),
             ]);
-            
+
             const servicesObj = {};
             const groupsObj = {};
 
@@ -467,13 +548,17 @@ const TirthPage = ({ data, setData, error, children }) => {
                 (serviceThis) => (servicesObj[serviceThis.id] = false)
             );
 
-            if (!Object.keys(data.service).length && !Object.keys(data.group).length)
+            if (
+                !Object.keys(data.service).length &&
+                !Object.keys(data.group).length
+            )
                 setData({ ...data, service: servicesObj, group: groupsObj });
 
             setInfluencers(influencers);
             setGroups(groupsProm);
             setServices(servicesProm);
 
+            setGAndSLoad(true);
         };
         fn();
 

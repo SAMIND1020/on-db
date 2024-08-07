@@ -39,7 +39,7 @@ export default function Person({ person, children }) {
                 </div>
             </td>
             <td className="p-2 border border-black">{Influencer?.Nombre}</td>
-            <td>{children}</td>
+            {children}
         </tr>
     );
 }

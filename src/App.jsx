@@ -5,8 +5,8 @@ import { getUser, signOut } from "../firebase/firebaseAuth";
 import { LISTS_TYPES, ROLES_TYPES } from "../types";
 
 import LoginForm from "./components/LoginForm";
-import ListOfPersons from "./components/ListOfPersons";
-import ListOfMyInfluences from "./components/ListOfMyInfluences";
+import ListOfPersons from "./components/ListofPersons/ListOfPersons";
+import ListOfMyInfluences from "./components/ListOfMyInfluences/ListOfMyInfluences";
 
 export default function App() {
     const [loginModal, setLoginModal] = useState(false);

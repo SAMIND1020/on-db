@@ -4,7 +4,7 @@ import { useState } from "react";
 import { login, resetPassword } from "../../firebase/firebaseAuth";
 import { ALERT_TYPES } from "../../types";
 
-import Alert from "../components/Alert";
+import Alert from "./Alert";
 
 export default function LoginForm({ setLoginModal, resetAuth }) {
     const [email, setEmail] = useState("");

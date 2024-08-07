@@ -31,6 +31,7 @@ export async function getPersons({ order, filter, influencerRef }) {
     for (let i = 0; i < data.length; i++) {
         const { Influencer } = data[i];
         data[i].Influencer = Influencer ? (await getDoc(doc(fs, "personas", Influencer.id))).data() : { Nombre: "N/A" };
+        data[i].Influencer.id = Influencer?.id;
     }
 
     const filteredData = (
@@ -102,7 +103,17 @@ export async function getServices() {
 }
 
 export async function createUser(data) {
-    const { Documento, group, service, selectedLocation, FechaInicio, FechaNacimiento, influencer, ...payload } = data;
+    const {
+        Documento,
+        group,
+        service,
+        selectedLocation,
+        influencer,
+        FechaInicio,
+        FechaNacimiento,
+        ...payload } = data;
+
+    if (!FechaInicio && !FechaNacimiento) return;
 
     if (Object.values(data).reduce((a, c) => !c ? true : a, false)) return;
 
@@ -121,8 +132,6 @@ export async function createUser(data) {
         Grupos,
         Servicios,
         Influencer: doc(fs, `personas/${influencer}`),
-        "Fecha de Nacimiento": FechaNacimiento,
-        "Fecha de Inicio": FechaInicio
     });
 
     for (let i = 0; i < Grupos.length; i++) {
@@ -148,6 +157,94 @@ export async function createUser(data) {
             Miembros: membersService
         })
     }
+
+    return true;
+}
+
+export async function updateUser(data) {
+    const {
+        Documento,
+        group,
+        service,
+        selectedLocation,
+        influencer,
+        FechaInicio,
+        FechaNacimiento,
+        id,
+        ...payload } = data;
+
+    if (!FechaInicio && !FechaNacimiento) return;
+
+    if (Object.values(data).reduce((a, c) => !c ? true : a, false)) return;
+
+    const { address, display_name, name, lat, lon, place_id, licence } = selectedLocation;
+    const Direccion = { address, display_name, name, lat, lon, place_id, licence };
+    const Grupos = Object.entries(group).filter(([, v]) => v).map(([k]) => doc(fs, `/grupos/${k}`));
+    const Servicios = Object.entries(service).filter(([, v]) => v).map(([k]) => doc(fs, `/servicios/${k}`));
+
+    await updateDoc(doc(fs, "personas", id), {
+        ...payload,
+        Documento,
+        Direccion,
+        Grupos,
+        Servicios,
+        Influencer: doc(fs, `personas/${influencer}`),
+    });
+
+    const otherGrupos = Object.entries(group).map(([k]) => doc(fs, `/grupos/${k}`));
+    const otherServicios = Object.entries(service).map(([k]) => doc(fs, `/servicios/${k}`));
+
+    // Delete References in groups and services
+    for (let i = 0; i < otherGrupos.length; i++) {
+        const g = otherGrupos[i];
+
+        const membersGroup = (await getDoc(g)).data().Miembros;
+
+        const updatedMembersGroup = membersGroup.filter(m => m.id != id)
+
+        await updateDoc(g, {
+            Miembros: updatedMembersGroup
+        })
+    }
+
+    for (let i = 0; i < otherServicios.length; i++) {
+        const s = otherServicios[i];
+
+        const membersService = (await getDoc(s)).data().Miembros;
+
+        const updatedMembersService = membersService.filter(m => m.id != id)
+
+        await updateDoc(s, {
+            Miembros: updatedMembersService
+        })
+    }
+
+    // Rereference in groups and services
+    for (let i = 0; i < Grupos.length; i++) {
+        const g = Grupos[i];
+
+        const membersGroup = (await getDoc(g)).data().Miembros;
+
+        membersGroup.push(doc(fs, "personas", id))
+
+        await updateDoc(g, {
+            Miembros: membersGroup
+        })
+    }
+
+    for (let i = 0; i < Servicios.length; i++) {
+        const s = Servicios[i];
+
+        const membersService = (await getDoc(s)).data().Miembros;
+
+        membersService.push(doc(fs, "personas", id))
+
+        await updateDoc(s, {
+            Miembros: membersService
+        })
+    }
+
+    return true;
 }
 
 export async function getEventsByRefs(eventsRefs) {
@@ -255,4 +352,59 @@ export async function deletePerson(person) {
     }
 
     return person;
+}
+
+export async function createEvent(event) {
+    const { group, FechaInicio, FechaFinalizacion, ...payload } = event;
+
+    if (!FechaInicio && !FechaFinalizacion) return;
+
+    const Grupo = doc(fs, `grupos/${group.id}`);
+
+    const generarId = () => Math.random().toString(36).substr(2, 10);
+    const ID = generarId();
+
+    await setDoc(doc(fs, "eventos", ID), {
+        ...payload,
+        Grupo,
+        Asistencias: []
+    });
+
+
+    const eventsGroup = group.Eventos;
+
+    eventsGroup.push(doc(fs, "eventos", ID))
+
+    await updateDoc(Grupo, {
+        Eventos: eventsGroup
+    })
+
+    return true;
+}
+
+export async function updateEvent(event) {
+    const { id, FechaFinalizacion, FechaInicio, status, Asistencias, ...payload } = event;
+
+    if (!FechaFinalizacion && !FechaInicio && !status && !Asistencias) return;
+
+    await updateDoc(doc(fs, "eventos", id), {
+        ...payload
+    });
+
+    return true;
+}
+
+export async function deleteEvent(event) {
+    await deleteDoc(doc(fs, "eventos", event.id))
+
+    const group = (await getDoc(event.Grupo)).data();
+
+    const updatedEventsGroup = group.Eventos.filter(e => e.id != event.id)
+
+    await updateDoc(event.Grupo, {
+        ...group,
+        Eventos: updatedEventsGroup
+    })
+
+    return true;
 }

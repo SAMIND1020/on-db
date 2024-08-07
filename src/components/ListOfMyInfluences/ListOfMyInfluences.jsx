@@ -1,16 +1,19 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
+
 import {
     getEventsByRefs,
     getGroups,
     getInfluencerRef,
     getPersons,
-} from "../../firebase/firebaseDB";
-
-import FilterModal from "./FilterModal";
-import Persons from './Persons'
+    deleteEvent,
+} from "../../../firebase/firebaseDB";
+import { EVENTS_STATUS, ALERT_TYPES } from "../../../types";
+import FilterModal from "../FilterModal";
+import Alert from "../Alert";
+import Persons from "../Persons";
 import Event from "./Event";
-import { EVENTS_STATUS } from "../../types";
+import CorUEventModal from "./CorUEventModal";
 
 export default function ListOfMyInfluences({ children, influencer }) {
     const [events, setEvents] = useState([]);
@@ -21,6 +24,10 @@ export default function ListOfMyInfluences({ children, influencer }) {
     const [order, setOrder] = useState({ orderBy: "Nombre", type: "asc" });
     const [persons, setPersons] = useState([]);
     const [viewAllEventsModal, setViewAllEventsModal] = useState(false);
+    const [corUEventsModal, setCorUEventsModal] = useState(false);
+    const [updateEvent, setUpdateEvent] = useState({});
+    const [generalAlert, setGeneralAlert] = useState({});
+    const [modalAlert, setModalAlert] = useState({});
 
     useEffect(() => {
         const fn = async () => {
@@ -74,10 +81,49 @@ export default function ListOfMyInfluences({ children, influencer }) {
         });
     };
 
-    const updateEvent = () => {
-        const fn = async () => setEvents(await getEventsByRefs(group.Eventos));
+    const refreshEvents = () => {
+        const fn = async () => {
+            // Get groups
+            const allGroups = await getGroups();
+            const filteredGroups = allGroups.filter((g) =>
+                g.Influencers?.reduce(
+                    (a, c) => (c.path == influencerRef.path ? true : a),
+                    false
+                )
+            );
 
-        if (Object.keys(group).length) fn();
+            setGroups(filteredGroups);
+            setGroup(filteredGroups[0]);
+
+            if (Object.keys(group).length)
+                setEvents(await getEventsByRefs(group.Eventos));
+        };
+
+        fn();
+    };
+
+    const handleUpdateEvent = (e) => {
+        setCorUEventsModal(true);
+        setUpdateEvent(e);
+    };
+
+    const handleDeleteEvent = (e) => {
+        const res = deleteEvent(e);
+
+        if (!res) return;
+
+        setModalAlert({
+            msg: `Se ha eliminado el evento ${e.Nombre} correctamente`,
+            type: ALERT_TYPES.SUCCESS,
+        });
+
+        setTimeout(() => {
+            refreshEvents();
+        }, 200);
+
+        setTimeout(() => {
+            setModalAlert({});
+        }, 1000);
     };
 
     return (
@@ -87,8 +133,34 @@ export default function ListOfMyInfluences({ children, influencer }) {
                 <div className="w-full h-8">
                     <FilterModal setFilter={setFilter} />
                 </div>
-                <Persons handleChangeOrder={handleChangeOrder} persons={persons} />
+                <Persons
+                    handleChangeOrder={handleChangeOrder}
+                    persons={persons}
+                    setAlert={() => {}}
+                />
             </section>
+            {Object.keys(generalAlert).length != 0 && (
+                <div className="fixed top-10 sm:left-[40dvw] left-[30dvw]">
+                    <div className="relative">
+                        <section className="w-full z-10 sticky">
+                            <div className="flex items-center justify-center">
+                                <div
+                                    className={`font-bold p-2 rounded-xl border-2 ${
+                                        generalAlert.type == ALERT_TYPES.SUCCESS
+                                            ? "bg-green-700 border-green-900"
+                                            : "bg-indigo-700 border-indigo-900"
+                                    }`}
+                                >
+                                    <Alert
+                                        alert={generalAlert}
+                                        setAlert={setGeneralAlert}
+                                    />
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            )}
             {viewAllEventsModal && (
                 <section className="h-full w-full opacity-90 bg-black top-0 left-0 z-10 absolute">
                     <div className="flex items-center justify-center h-full">
@@ -124,9 +196,28 @@ export default function ListOfMyInfluences({ children, influencer }) {
                                     events.map((e) => (
                                         <div key={e.id} className="mb-4">
                                             <Event
-                                                updateEvent={updateEvent}
+                                                updateEvent={refreshEvents}
                                                 e={e}
-                                            />
+                                                handleUpdateEvent={
+                                                    handleUpdateEvent
+                                                }
+                                            >
+                                                <p
+                                                    className="ml-1 px-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer hover:bg-slate-400 transition-all"
+                                                    onClick={() =>
+                                                        setModalAlert({
+                                                            msg: `¿Desea eliminar el evento ${e.Nombre}?`,
+                                                            type: ALERT_TYPES.CONFIRM,
+                                                            handleConfirm: () =>
+                                                                handleDeleteEvent(
+                                                                    e
+                                                                ),
+                                                        })
+                                                    }
+                                                >
+                                                    x
+                                                </p>
+                                            </Event>
                                         </div>
                                     ))
                                 ) : (
@@ -135,7 +226,44 @@ export default function ListOfMyInfluences({ children, influencer }) {
                             </div>
                         </div>
                     </div>
+                    <div>
+                        {Object.keys(modalAlert).length != 0 && (
+                            <div className="fixed top-10 sm:left-[40dvw] left-[30dvw]">
+                                <div className="relative">
+                                    <section className="w-full z-10 sticky">
+                                        <div className="flex items-center justify-center">
+                                            <div
+                                                className={`font-bold p-2 rounded-xl border-2 ${
+                                                    generalAlert.type ==
+                                                    ALERT_TYPES.SUCCESS
+                                                        ? "bg-green-700 border-green-900"
+                                                        : "bg-indigo-700 border-indigo-900"
+                                                }`}
+                                            >
+                                                <Alert
+                                                    alert={modalAlert}
+                                                    setAlert={setModalAlert}
+                                                />
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </section>
+            )}
+            {corUEventsModal && (
+                <CorUEventModal
+                    refreshEvents={refreshEvents}
+                    setAlert={setGeneralAlert}
+                    setCorUEventModal={setCorUEventsModal}
+                    updateEvent={updateEvent}
+                    setUpdateEvent={setUpdateEvent}
+                    setGroup={setGroup}
+                    groups={groups}
+                    group={group}
+                />
             )}
             <section className="absolute bottom-16 left-0 border-t-2 border-black pt-6 w-screen pl-5 pr-5">
                 <div className="flex justify-between">
@@ -173,9 +301,12 @@ export default function ListOfMyInfluences({ children, influencer }) {
                                     )
                                     .map((e) => (
                                         <Event
-                                            updateEvent={updateEvent}
+                                            updateEvent={refreshEvents}
                                             key={e.id}
                                             e={e}
+                                            handleUpdateEvent={
+                                                handleUpdateEvent
+                                            }
                                         />
                                     ))
                             ) : (
@@ -183,7 +314,13 @@ export default function ListOfMyInfluences({ children, influencer }) {
                             )}
                         </div>
                     </div>
-                    <div>
+                    <div className="flex h-fit">
+                        <button
+                            className=" px-1 mr-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer hover:bg-slate-400 transition-all"
+                            onClick={() => setCorUEventsModal(true)}
+                        >
+                            +
+                        </button>
                         <button
                             className=" px-1 font-bold border-2 border-black w-fit rounded-lg mt-1 hover:cursor-pointer hover:bg-slate-400 transition-all"
                             onClick={() => setViewAllEventsModal(true)}
