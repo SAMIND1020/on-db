@@ -46,8 +46,14 @@ export default function CreatePersonModal({
         e.preventDefault();
 
         const errorFirstPage = {};
-        data["Fecha de Finalizacion"] = new Date(data.FechaFinalizacion);
-        data["Fecha de Inicio"] = new Date(data.FechaInicio);
+        const newFechaFinalizacion = new Date(data.FechaFinalizacion);
+        const newFechaInicio = new Date(data.FechaInicio);
+
+        newFechaFinalizacion.setDate(newFechaFinalizacion.getDate() + 1);
+        newFechaInicio.setDate(newFechaInicio.getDate() + 1);
+
+        data["Fecha de Inicio"] = newFechaInicio;
+        data["Fecha de Finalizacion"] = newFechaFinalizacion;
 
         if (!data.Nombre) errorFirstPage.Nombre = "Invalid Name";
 
@@ -75,6 +81,7 @@ export default function CreatePersonModal({
         if (!res) return;
 
         setCorUEventModal(false);
+        setUpdateEvent({});
         setTimeout(() => {
             setAlert({
                 msg: `Se ha ${

@@ -64,7 +64,7 @@ export default function Persons({
                         <th className="border border-black p-2">Edad</th>
                         <th className="border border-black p-2">Grupos</th>
                         <th className="border border-black p-2">Servicios</th>
-                        <th className="border border-black p-2">Incluencer</th>
+                        <th className="border border-black p-2">Influencer</th>
                     </tr>
                 </thead>
                 <tbody className="users">

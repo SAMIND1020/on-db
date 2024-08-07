@@ -89,8 +89,14 @@ export default function CreatePersonModal({
         const documentRegex = /^((\d{8})|(\d{10})|(\d{11})|(\d{6}-\d{5}))?$/;
 
         const errorFirstPage = {};
-        data["Fecha de Nacimiento"] = new Date(data.FechaNacimiento);
-        data["Fecha de Inicio"] = new Date(data.FechaInicio);
+        const newFechaNacimiento = new Date(data.FechaNacimiento);
+        const newFechaInicio = new Date(data.FechaInicio);
+
+        newFechaNacimiento.setDate(newFechaNacimiento.getDate() + 1);
+        newFechaInicio.setDate(newFechaInicio.getDate() + 1);
+
+        data["Fecha de Inicio"] = newFechaInicio;
+        data["Fecha de Nacimiento"] = newFechaNacimiento;
 
         if (!data.Nombre) errorFirstPage.Nombre = "Invalid Name";
 
@@ -124,8 +130,6 @@ export default function CreatePersonModal({
         if (!data.FechaInicio || Date.now() - data["Fecha de Inicio"] < 0)
             errorTirthPage.FechaInicio = "Invalid Init Date";
 
-        if (!data.influencer) errorTirthPage.influencer = "Invalid Influencer";
-
         if (!Object.values(data.group).reduce((a, c) => (a ? a : c), false))
             errorTirthPage.group = "select at least one group";
 
@@ -144,6 +148,7 @@ export default function CreatePersonModal({
         if (!res) return;
 
         setCorUPersonModal(false);
+        setUpdatePerson({});
         setTimeout(() => {
             refreshPersons();
             setAlert({
@@ -247,9 +252,12 @@ export default function CreatePersonModal({
                                             className={
                                                 "font-black p-1 border-2 border-black rounded-lg text-white bg-indigo-600 hover:bg-indigo-800 transition-all hover:cursor-pointer"
                                             }
-                                            value={Object.keys(updatePerson).length != 0
-                                                ? "Actualizar Persona"
-                                                : "Inscribir Persona"}
+                                            value={
+                                                Object.keys(updatePerson)
+                                                    .length != 0
+                                                    ? "Actualizar Persona"
+                                                    : "Inscribir Persona"
+                                            }
                                         />
                                     </div>
                                 </div>
