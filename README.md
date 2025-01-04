@@ -16,11 +16,11 @@ The roles of the diferents parts of the team is Influencer and Admin, both with 
 ## Structure 🗂️:
 The structure basically consists in groups, it is admin by a influencer, and has some people. The groups have events, it has attendance of the people or memebers of the group.
 
-![Diagram1](https://github.com/SAMIND1020/on-db/assets/109694273/b15b56aa-a91f-4c83-b22b-09dac84d3840)
+![Diagram1](https://github.com/user-attachments/assets/6ae41d9d-fb00-4038-9c57-68804f3f8e44)
 
 On the other hand, the people could be added to a service category, it no have important relevance on the manage of the people but it be a better form to split the people.
 
-![Driagram2](https://github.com/SAMIND1020/on-db/assets/109694273/486e59e5-0944-4af5-a34b-1570fdd29365)
+![Driagram2](https://github.com/user-attachments/assets/413e4abf-c48e-4917-b98c-2780c367ccc4)
 
 ## Finish 🏁:
 Thanks for the cooperation of the ON membership to do this web posible!, our objective is based on the successfuly manage of the people of the ON's family
