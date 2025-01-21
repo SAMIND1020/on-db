@@ -32,7 +32,7 @@ const login = async (req, res) => {
             msg: "The user has been logged correctly",
             dataName: "user",
             customFields: { token },
-            excludedFields: [ "password" ]
+            excludedFields: ["password"]
         }));
     } catch (err) {
         console.log(err);
@@ -47,10 +47,11 @@ const renewToken = async (req, res) => {
     // Generate JWT
     const token = await generateJWT({ id: authUser.id, email: authUser.email });
 
-    res.json({
-        user: authUser,
-        token
-    })
+    res.json(buildResponse(authUser, {
+        dataName: "user",
+        customFields: { token },
+        excludedFields: ["password"]
+    }));
 }
 
 module.exports = {
