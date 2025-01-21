@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const createPageContext = () => {
     const PageContext = createContext();
@@ -8,6 +8,16 @@ const createPageContext = () => {
         const [page, _setPage] = useState(
             pages.find((p) => p.path === initialPage) || pages[0]
         );
+        useEffect(() => {
+            if (pages instanceof Array && pages.length !== 0) {
+                _setPage(pages.find((p) => p.path === initialPage) || pages[0]);
+                return;
+            }
+
+            _setPage([])
+
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [pages]);
 
         const setPage = (newPage = "home") => {
             const targetPage = pages.find((p) => p.path === newPage);

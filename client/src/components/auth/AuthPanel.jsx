@@ -14,7 +14,7 @@ const AuthPanel = ({ user = {}, onClick = () => {}, selectedPage }) => {
                     </p>
                 </div>
             ) : (
-                <div className="flex flex-col rounded-xl shadow-md border border-secondary dark:border-secondary-dark">
+                <div className="flex flex-col rounded-xl shadow-md border border-selected dark:border-selected-dark">
                     <Button onClick={onClick} mode={2} rounded="md" shadow="md">
                         {selectedPage ? "Login" : "Close"}
                     </Button>
