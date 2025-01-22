@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import NavigationPanel from "../../components/navigation_and_filters/NavigationPanel";
 import PaginationPanel from "../../components/tables/PaginationPanel";
 import TableRegistry from "../../components/tables/TableRegistry";
@@ -8,7 +10,8 @@ import {
     GroupPageProvider,
     useGroupPageContext,
 } from "../../contexts/PageContext";
-import { useState } from "react";
+import { useGetGroups } from "../../hooks/models/useGroups";
+import Group from "../../models/Group";
 
 const GroupsPage = () => {
     const { page, setPage, pages } = useGroupPageContext();
@@ -21,7 +24,7 @@ const GroupsPage = () => {
                 <>
                     <Table columnNames={columnNames}>
                         {pages.length != 0 &&
-                            page.people?.length &&
+                            page.people instanceof Array &&
                             page.people.map((person) => (
                                 <TableRegistry
                                     columnNames={columnNames}
@@ -52,6 +55,22 @@ const GroupsPage = () => {
 
 const GroupPageContainer = () => {
     const [groupPages, setGroupPages] = useState([]);
+
+    const onLoadPage = (groups) => {
+        const newGroups = groups.map((group) => new Group(group));
+
+        if (newGroups instanceof Array)
+            setGroupPages(() =>
+                newGroups.map(({ name, events, people, id }) => ({
+                    name,
+                    path: `group-${id}`,
+                    events,
+                    people,
+                }))
+            );
+    };
+
+    useGetGroups({ onLoadPage });
 
     return (
         <GroupPageProvider pages={groupPages} initialPage="group-1">

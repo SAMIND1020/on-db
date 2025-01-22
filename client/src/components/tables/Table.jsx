@@ -9,10 +9,10 @@ const Table = (props) => {
 
     return (
         <div className="p-3">
-            <div className="flex overflow-hidden rounded-xl border borderselected bg-secondary dark:bg-secondary-dark">
+            <div className="flex overflow-hidden rounded-xl border border-selected dark:border-selected-dark bg-secondary dark:bg-secondary-dark">
                 <table className="flex-1">
                     <thead>
-                        <tr className="bg-secondary dark:bg-secondary-dark border-b border-bselected">
+                        <tr className="bg-secondary dark:bg-secondary-dark border-selected dark:border-selected-dark">
                             <td className="h-[72px] px-4 py-2 text-text dark:text-text-dark text-sm font-normal leading-normal" />
 
                             {columnNames.map((column, i) => (

@@ -30,7 +30,7 @@ export default {
         },
         selected: {
           DEFAULT: "#e8eef3",
-          dark: "#33434A"
+          dark: "#3e4e57"
         },
         disable: {
           DEFAULT: "#b6b6b6"

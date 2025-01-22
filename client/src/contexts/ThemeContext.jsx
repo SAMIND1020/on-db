@@ -5,9 +5,9 @@ import { THEME_TYPES } from "../types";
 const ThemeContext = createContext();
 
 const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(() => {
-        return localStorage.getItem("theme") || THEME_TYPES.LIGHT;
-    });
+    const [theme, setTheme] = useState(
+        () => localStorage.getItem("theme") || THEME_TYPES.LIGHT
+    );
 
     useEffect(() => {
         document.body.className = theme;

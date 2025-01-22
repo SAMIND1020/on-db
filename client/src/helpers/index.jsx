@@ -1,3 +1,5 @@
+import CryptoJS from "crypto-js";
+
 export function capitalizeWithSpaces(str) {
     return str
         .replace(/_./g, (match) => " " + match[1].toUpperCase())
@@ -76,3 +78,23 @@ export function getUserCountByLastMonths(users) {
 
     return result;
 }
+
+export const encryptToken = (token) => {
+    const encryptedToken = CryptoJS.AES.encrypt(
+        token,
+        import.meta.env.VITE_SECRET_KEY
+    ).toString();
+
+    return encryptedToken;
+};
+
+export const decryptToken = (encryptedToken) => {
+    if (encryptedToken) {
+        const bytes = CryptoJS.AES.decrypt(
+            encryptedToken,
+            import.meta.env.VITE_SECRET_KEY
+        );
+        return bytes.toString(CryptoJS.enc.Utf8);
+    }
+    return "";
+};

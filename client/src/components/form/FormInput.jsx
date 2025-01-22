@@ -11,30 +11,23 @@ const FormInput = ({
     value = "",
     checkbox_cols = 2,
 }) => {
+    const isInputType =
+        type === INPUT_TYPES.TEXT ||
+        type === INPUT_TYPES.EMAIL ||
+        type === INPUT_TYPES.PASSWORD ||
+        type === INPUT_TYPES.DATE;
+
     return (
         <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label className="flex flex-col min-w-40 flex-1">
                 <p className="text-text dark:text-text-dark text-base font-medium leading-normal pb-2">
                     {label}
                 </p>
-                {type === INPUT_TYPES.TEXT && (
+                {isInputType && (
                     <input
                         value={value}
+                        type={type}
                         placeholder={placeholder}
-                        className="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-text dark:text-text-dark focus:outline-0 focus:ring-0 border-none bg-selected dark:bg-selected-dark focus:border-none h-14 placeholder:text-text2 dark:placeholder:text-text2-dark p-4 text-base font-normal leading-normal"
-                        onChange={(e) =>
-                            onChange(
-                                e.target.value,
-                                lowercaseWithUnderscores(label)
-                            )
-                        }
-                        id={`${lowercaseWithUnderscores(label)}-form`}
-                    />
-                )}
-                {type === INPUT_TYPES.DATE && (
-                    <input
-                        value={value}
-                        type="date"
                         className="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-text dark:text-text-dark focus:outline-0 focus:ring-0 border-none bg-selected dark:bg-selected-dark focus:border-none h-14 placeholder:text-text2 dark:placeholder:text-text2-dark p-4 text-base font-normal leading-normal"
                         onChange={(e) =>
                             onChange(

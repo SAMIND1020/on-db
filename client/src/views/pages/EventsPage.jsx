@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Calendar from "../../components/calendar/Calendar";
 
 import { COLORS_TYPES } from "../../types";
@@ -7,10 +7,22 @@ import Button from "../../components/general/Button";
 import CreateEventModal from "../modals/CreateEventModal";
 import EventModal from "../modals/EventModal";
 
+import { useGetEvents } from "../../hooks/models/useEvents";
+import Event from "../../models/Event";
+
 const EventsPage = () => {
     const [createEventModal, setCreateEventModal] = useState(false);
     const [eventInfo, setEventInfo] = useState({});
     const [events, setEvents] = useState([]);
+
+    const onLoadPage = (events) => {
+        const newEvents = events.map(
+            (event) => new Event(event)
+        );
+        setEvents(newEvents);
+    };
+
+    useGetEvents({ onLoadPage });
 
     const handleOnClickEvent = ({ event }) =>
         setEventInfo(events.find((e) => e.id == event.id));
@@ -34,8 +46,7 @@ const EventsPage = () => {
                         id: event.id,
                         title: event.name,
                         date: event.init_date.split("T")[0],
-                        backgroundColor:
-                            COLORS_TYPES[event.group_id - 1],
+                        backgroundColor: COLORS_TYPES[event.group_id - 1],
                         borderColor: COLORS_TYPES[event.group_id - 1],
                         className: "font-normal",
                     }))}

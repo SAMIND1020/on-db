@@ -28,6 +28,8 @@ ChartJS.register(
 
 export const INPUT_TYPES = Object.freeze({
     TEXT: "text",
+    PASSWORD: "password",
+    EMAIL: "email",
     SELECT: "select",
     CHECKBOXES: "checkboxes",
     DATE: "date",
@@ -62,3 +64,12 @@ export const COLORS_TYPES = Object.freeze([
 ]);
 
 export const THEME_TYPES = Object.freeze({ LIGHT: "light", DARK: "dark" });
+
+export const ALERT_TYPES = Object.freeze({
+    ERROR: "error",
+    SUCCESS: "success",
+    WARNING: "warning",
+    INFO: "info",
+});
+
+export const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

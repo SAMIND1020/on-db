@@ -1,36 +1,77 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import Page from "../../components/general/Page";
 import Video from "../../components/general/Video";
-import BarChart from "../../components/chart/BarChart";
-import LineChart from "../../components/chart/LineChart";
 import Table from "../../components/tables/Table";
 import TableRegistry from "../../components/tables/TableRegistry";
+import StatsModal from "../modals/StatsModal";
 
+import { useGetGroups } from "../../hooks/models/useGroups";
 import { useAuthContext } from "../../contexts/AuthContext";
 
-import {
-    getUserCountByLastMonths,
-    getLastMonthVariation,
-    getMostRecentItem,
-    getUpcomingEvents,
-} from "../../helpers";
+import Group from "../../models/Group";
+import Event from "../../models/Event";
+import Person from "../../models/Person";
+
+import { getUpcomingEvents } from "../../helpers";
 
 const HomePage = () => {
     const { user } = useAuthContext();
 
-    const [persons, setPersons] = useState([]);
+    const [people, setPeople] = useState([]);
     const [events, setEvents] = useState([]);
     const [groups, setGroups] = useState([]);
+    // eslint-disable-next-line no-unused-vars
     const [lastVideoId, setLastVideoId] = useState("");
+
+    const onLoadPage = (groups) => {
+        const newGroups = groups.map(
+            ({ createdAt, updatedAt, ...group }) =>
+                new Group({
+                    created_at: createdAt,
+                    updated_at: updatedAt,
+                    ...group,
+                })
+        );
+
+        if (!(newGroups instanceof Array) || newGroups.length === 0) return;
+
+        const newEvents = [];
+        const newPeople = [];
+
+        newGroups.forEach((group) => {
+            group.events.forEach((event) => {
+                if (
+                    typeof newEvents.find((e) => event.id === e.id) ===
+                    "undefined"
+                )
+                    newEvents.push(new Event(event));
+            });
+            group.members.forEach((member) => {
+                if (
+                    typeof newPeople.find((m) => member.id === m.id) ===
+                    "undefined"
+                )
+                    newPeople.push(new Person(member));
+            });
+        });
+
+        setGroups(newGroups);
+        setEvents(newEvents);
+        setPeople(newPeople);
+    };
+
+    useGetGroups({ onLoadPage });
 
     return (
         <Page title="Home" widthFull>
-            {/* <div className="flex w-full justify-between gap-3 px-5 mb-2">
-                <p className="text-text2 dark:text-text2-dark text-xl font-medium leading-tight ml-7">
-                    {`¡Hi ${user.name.split(" ")[0]}, welcome back!`}
-                </p>
-            </div> */}
+            {/* {Object.keys(user).length !== 0 && user && (
+                <div className="flex w-full justify-between gap-3 px-5 mb-2">
+                    <p className="text-text2 dark:text-text2-dark text-xl font-medium leading-tight ml-7">
+                        {`¡Hi ${user.name.split(" ")[0]}, welcome back!`}
+                    </p>
+                </div>
+            )} */}
             <div className="px-12 py-2">
                 <div className="flex gap-10">
                     <div>
@@ -61,76 +102,10 @@ const HomePage = () => {
                         </Table>
                     </div>
                 </div>
-                <p className="mt-2 font-semibold text-xl text-text dark:text-text-dark">
-                    Stats
-                </p>
-                <div className="flex gap-4 py-2">
-                    <div className="flex w-full flex-col gap-2 rounded-xl p-6 border borderselected">
-                        <p className="text-text dark:text-text-dark text-base font-medium leading-normal">
-                            Total People
-                        </p>
-                        <p className="text-text dark:text-text-dark tracking-light text-2xl font-bold leading-tight">
-                            {persons.length}
-                        </p>
-                    </div>
-                    <div className="flex w-full flex-col gap-2 rounded-xl p-6 border borderselected">
-                        <p className="text-text dark:text-text-dark text-base font-medium leading-normal">
-                            New People (Last 30 Days)
-                        </p>
-                        <p className="text-text dark:text-text-dark tracking-light text-2xl font-bold leading-tight">
-                            {getLastMonthVariation(persons)}
-                        </p>
-                    </div>
-                    <div className="flex w-full flex-col gap-2 rounded-xl p-6 border borderselected">
-                        <p className="text-text dark:text-text-dark text-base font-medium leading-normal">
-                            Last Person Added
-                        </p>
-                        <p className="text-text dark:text-text-dark tracking-light text-2xl font-bold leading-tight">
-                            {getMostRecentItem(
-                                persons,
-                                "created_at"
-                            )?.name.split(" ")[0] || "Loading..."}
-                        </p>
-                    </div>
-                    <div className="flex w-full flex-col gap-2 rounded-xl p-6 border borderselected">
-                        <p className="text-text dark:text-text-dark text-base font-medium leading-normal">
-                            Total Events
-                        </p>
-                        <p className="text-text dark:text-text-dark tracking-light text-2xl font-bold leading-tight">
-                            {events.length}
-                        </p>
-                    </div>
-                </div>
             </div>
-            <div className="flex gap-4 px-12">
-                <div className="rounded-xl h-44 w-full border borderselected">
-                    <BarChart
-                        data={groups.map((g) => ({
-                            data: [g.events.length],
-                            label: g.name,
-                        }))}
-                        labels={["Events Per Group"]}
-                    />
-                </div>
-                <div className="rounded-xl h-44 w-full border borderselected">
-                    <BarChart
-                        data={groups.map((g) => ({
-                            data: [g.people.length],
-                            label: g.name,
-                        }))}
-                        labels={["People Per Group"]}
-                    />
-                </div>
-                <div className="rounded-xl h-44 w-full border borderselected">
-                    <LineChart
-                        data={getUserCountByLastMonths(persons).map((g) => ({
-                            data: g.value,
-                            label: g.month,
-                        }))}
-                        title="People Per Mounth"
-                    />
-                </div>
-            </div>
+            {Object.keys(user).length !== 0 && (
+                <StatsModal groups={groups} people={people} events={events} />
+            )}
         </Page>
     );
 };

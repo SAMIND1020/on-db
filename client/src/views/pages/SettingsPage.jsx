@@ -1,15 +1,20 @@
 import { useState } from "react";
 
 import Page from "../../components/general/Page";
+import Button from "../../components/general/Button";
 import Form from "../../components/form/Form";
 import FormInput from "../../components/form/FormInput";
 
 import { useTheme } from "../../contexts/ThemeContext";
+import { useAuthContext } from "../../contexts/AuthContext";
+import { useGlobalPageContext } from "../../contexts/PageContext";
 
 import { INPUT_TYPES, ROLES_TYPES, THEME_TYPES } from "../../types";
 
 const SettingsPage = () => {
     const { theme, setTheme } = useTheme();
+    const { setUser } = useAuthContext();
+    const { setPage } = useGlobalPageContext();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -30,6 +35,14 @@ const SettingsPage = () => {
                 label="Theme"
                 onChange={setTheme}
             />
+            <Button
+                onClick={() => {
+                    setUser({ user: {}, token: "" });
+                    setPage("login");
+                }}
+            >
+                Log Out
+            </Button>
             <div className="flex">
                 <Form title="Edit Profile" titleSmall>
                     <FormInput
