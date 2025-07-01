@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Page from "../../components/general/Page";
 import Video from "../../components/general/Video";
@@ -7,61 +7,24 @@ import TableRegistry from "../../components/tables/TableRegistry";
 import StatsModal from "../modals/StatsModal";
 
 import { useGetGroups } from "../../hooks/models/useGroups";
+import { useGetPeople } from "../../hooks/models/usePeople";
+import { useGetEvents } from "../../hooks/models/useEvents";
 import { useAuthContext } from "../../contexts/AuthContext";
 
-import Group from "../../models/Group";
-import Event from "../../models/Event";
-import Person from "../../models/Person";
-
-import { getUpcomingEvents } from "../../helpers";
+import { getUpcomingEvents, getMostRecentItem } from "../../helpers";
 
 const HomePage = () => {
     const { user } = useAuthContext();
 
-    const [people, setPeople] = useState([]);
-    const [events, setEvents] = useState([]);
-    const [groups, setGroups] = useState([]);
-    // eslint-disable-next-line no-unused-vars
     const [lastVideoId, setLastVideoId] = useState("");
 
-    const onLoadPage = (groups) => {
-        const newGroups = groups.map(
-            ({ createdAt, updatedAt, ...group }) =>
-                new Group({
-                    created_at: createdAt,
-                    updated_at: updatedAt,
-                    ...group,
-                })
-        );
+    const { groups } = useGetGroups();
+    const { people } = useGetPeople();
+    const { events } = useGetEvents();
 
-        if (!(newGroups instanceof Array) || newGroups.length === 0) return;
-
-        const newEvents = [];
-        const newPeople = [];
-
-        newGroups.forEach((group) => {
-            group.events.forEach((event) => {
-                if (
-                    typeof newEvents.find((e) => event.id === e.id) ===
-                    "undefined"
-                )
-                    newEvents.push(new Event(event));
-            });
-            group.members.forEach((member) => {
-                if (
-                    typeof newPeople.find((m) => member.id === m.id) ===
-                    "undefined"
-                )
-                    newPeople.push(new Person(member));
-            });
-        });
-
-        setGroups(newGroups);
-        setEvents(newEvents);
-        setPeople(newPeople);
-    };
-
-    useGetGroups({ onLoadPage });
+    useEffect(() => {
+        setLastVideoId(getMostRecentItem(events)?.id_video);
+    }, [events]);
 
     return (
         <Page title="Home" widthFull>

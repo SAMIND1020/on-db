@@ -37,6 +37,12 @@ function transformObject(obj, renamedFields, excludedFields) {
             const value = obj[key];
 
             if (typeof value === 'object' && !Array.isArray(value) && value) {
+                // If is a date
+                if (value instanceof Date && typeof value.toISOString === "function") {
+                    newObj[newKey] = value.toISOString();
+                    continue;
+                }
+
                 newObj[newKey] = transformObject(
                     value, {}, getNestedExcludedFields(key, excludedFields));
             } else if (Array.isArray(value)) {

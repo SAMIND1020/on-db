@@ -19,13 +19,13 @@ const App = () => {
     const filteredPages = useFilteredPages(pages, user);
 
     return (
-        <div className="p-10 h-screen relative bg-background dark:bg-background-dark">
+        <div className="p-4 h-screen relative bg-background dark:bg-background-dark">
             <div
                 className="bg-secondary dark:bg-secondary-dark rounded-xl h-full"
                 style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}
             >
-                <div className="gap-1 px-6 py-2 flex flex-row h-full">
-                    <div className="flex h-full flex-col justify-between flex-none p-4 w-[260px]">
+                <div className="gap-1 p-4 flex flex-row h-full">
+                    <div className="flex h-full flex-col justify-between flex-none p-2 w-[230px]">
                         <div className="flex flex-col gap-4">
                             <AuthPanel
                                 selectedPage={page.path}
@@ -52,7 +52,7 @@ const App = () => {
 };
 
 const AppGlobalPages = () => (
-    <GlobalPageProvider pages={globalPages} initialPage="home">
+    <GlobalPageProvider pages={globalPages} initialPage="people">
         <App />
     </GlobalPageProvider>
 );

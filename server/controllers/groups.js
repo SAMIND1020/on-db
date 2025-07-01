@@ -60,7 +60,7 @@ const postGroups = async (req, res) => {
         }
 
         // Associate the influencers to the group
-        if (members) {
+        if (influencers) {
             await group.setUsers(influencers); // Ensure this matches your association
         }
 
@@ -99,7 +99,7 @@ const putGroups = async (req, res) => {
         }
 
         // Associate the influencers to the group
-        if (members) {
+        if (influencers) {
             await group.setUsers(influencers); // Ensure this matches your association
         }
 

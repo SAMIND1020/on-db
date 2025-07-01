@@ -24,8 +24,9 @@ const PieChart = ({ data = [] }) => {
 
     return (
         <Pie
+            className="w-full"
             data={{
-                labels:  data.map((d) => d.label),
+                labels: data.map((d) => d.label),
                 datasets: [
                     {
                         data: data.map((d) => d.data),

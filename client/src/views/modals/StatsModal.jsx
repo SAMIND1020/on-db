@@ -52,8 +52,8 @@ const StatsModal = ({ groups, people, events }) => {
                         </p>
                     </div>
                 </div>
-                <div className="flex gap-4">
-                    <div className="rounded-xl h-44 w-full border border-selected dark:border-selected-dark">
+                <div className="flex gap-3">
+                    <div className="rounded-xl h-44 w-full border border-selected dark:border-selected-dark py-3 px-2">
                         <BarChart
                             data={groups.map((g) => ({
                                 data: [g.events.length],
@@ -62,7 +62,7 @@ const StatsModal = ({ groups, people, events }) => {
                             labels={["Events Per Group"]}
                         />
                     </div>
-                    <div className="rounded-xl h-44 w-full border border-selected dark:border-selected-dark">
+                    <div className="rounded-xl h-44 w-full border border-selected dark:border-selected-dark py-3 px-2">
                         <BarChart
                             data={groups.map((g) => ({
                                 data: [g.members.length],
@@ -71,7 +71,7 @@ const StatsModal = ({ groups, people, events }) => {
                             labels={["People Per Group"]}
                         />
                     </div>
-                    <div className="rounded-xl h-44 w-full border border-selected dark:border-selected-dark">
+                    <div className="rounded-xl h-44 w-full border border-selected dark:border-selected-dark py-3 px-2">
                         <LineChart
                             data={getUserCountByLastMonths(people).map((g) => ({
                                 data: g.value,

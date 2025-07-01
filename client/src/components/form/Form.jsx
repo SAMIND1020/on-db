@@ -19,10 +19,10 @@ const Form = ({
     const inputsPerPage = children.length / pages;
 
     return (
-        <div className="flex flex-col flex-1 justify-between h-full">
+        <div className="flex flex-col flex-1 justify-between h-full overflow-y-auto">
             <div>
-                <div className="flex flex-wrap justify-between gap-3 p-4">
-                    <div className="flex min-w-72 flex-col gap-3">
+                <div className="flex flex-wrap justify-between p-4">
+                    <div className="flex min-w-[295px] flex-col gap-3">
                         <p
                             className={`text-text dark:text-text-dark tracking-light ${
                                 titleSmall ? `text-[20px]` : "text-[32px]"

@@ -13,6 +13,7 @@ const BarChart = ({ labels = [], data = [] }) => {
 
     return (
         <Bar
+            className="w-full"
             data={{
                 labels,
                 datasets: data.map((d, i) => ({

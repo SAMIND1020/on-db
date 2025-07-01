@@ -3,11 +3,11 @@ import Form from "../../components/form/Form";
 import FormInput from "../../components/form/FormInput";
 import FormMap from "../../components/form/FormMap";
 
-import { INPUT_TYPES, ID_TYPE_TYPES, MARITAL_STATUS_TYPES } from "../../types";
+import { useGetGroups } from "../../hooks/models/useGroups";
+import { useGetUsers } from "../../hooks/models/useUsers";
+import { useGetServices } from "../../hooks/models/useServices";
 
-const GROUPS_VALUES = [];
-const SERVICES_VALUES = [];
-const INFLUENCER_VALUES = [];
+import { INPUT_TYPES, ID_TYPE_TYPES, MARITAL_STATUS_TYPES } from "../../types";
 
 const CreatePersonModal = () => {
     const [formData, setFormData] = useState({
@@ -24,6 +24,10 @@ const CreatePersonModal = () => {
         groups: [],
         services: [],
     });
+
+    const { groups: groupsValues } = useGetGroups();
+    const { users: influencersValues } = useGetUsers();
+    const { services: servicesValues } = useGetServices();
 
     const handleInputChange = (value, key) => {
         setFormData((prevData) => ({ ...prevData, [key]: value }));
@@ -109,14 +113,14 @@ const CreatePersonModal = () => {
                     <FormInput
                         value={formData.groups}
                         type={INPUT_TYPES.CHECKBOXES}
-                        values={GROUPS_VALUES}
+                        values={groupsValues.map((g) => g.name)}
                         label="Groups"
                         onChange={(value) => handleInputChange(value, "groups")}
                     />
                     <FormInput
                         value={formData.services}
                         type={INPUT_TYPES.CHECKBOXES}
-                        values={SERVICES_VALUES}
+                        values={servicesValues.map((s) => s.name)}
                         label="Services"
                         onChange={(value) =>
                             handleInputChange(value, "services")
@@ -125,7 +129,7 @@ const CreatePersonModal = () => {
                     <FormInput
                         value={formData.influencer}
                         type={INPUT_TYPES.SELECT}
-                        values={INFLUENCER_VALUES}
+                        values={influencersValues.map((i) => i.name)}
                         label="Influencer"
                         onChange={(value) =>
                             handleInputChange(value, "influencer")

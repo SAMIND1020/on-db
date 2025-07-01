@@ -8,21 +8,12 @@ import CreateEventModal from "../modals/CreateEventModal";
 import EventModal from "../modals/EventModal";
 
 import { useGetEvents } from "../../hooks/models/useEvents";
-import Event from "../../models/Event";
 
 const EventsPage = () => {
     const [createEventModal, setCreateEventModal] = useState(false);
     const [eventInfo, setEventInfo] = useState({});
-    const [events, setEvents] = useState([]);
-
-    const onLoadPage = (events) => {
-        const newEvents = events.map(
-            (event) => new Event(event)
-        );
-        setEvents(newEvents);
-    };
-
-    useGetEvents({ onLoadPage });
+    
+    const {events} = useGetEvents();
 
     const handleOnClickEvent = ({ event }) =>
         setEventInfo(events.find((e) => e.id == event.id));
@@ -45,7 +36,9 @@ const EventsPage = () => {
                     events={events.map((event) => ({
                         id: event.id,
                         title: event.name,
-                        date: event.init_date.split("T")[0],
+                        date: new Date(event.init_date)
+                            .toISOString()
+                            .split("T")[0],
                         backgroundColor: COLORS_TYPES[event.group_id - 1],
                         borderColor: COLORS_TYPES[event.group_id - 1],
                         className: "font-normal",

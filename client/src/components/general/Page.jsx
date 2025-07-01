@@ -7,8 +7,8 @@ const Page = ({
     titleMarginl = true,
 }) => {
     return (
-        <div className={widthFull ? "flex flex-col w-full h-full" : ""}>
-            <div className="flex justify-between gap-3 p-5">
+        <div className={widthFull ? "flex flex-col w-full h-full overflow-auto" : ""}>
+            <div className="flex justify-between gap-3 p-4">
                 <p
                     className={`text-text dark:text-text-dark tracking-light text-[32px] font-bold leading-tight ${
                         titleMarginl ? "ml-7" : ""

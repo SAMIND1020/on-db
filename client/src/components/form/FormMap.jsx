@@ -78,7 +78,7 @@ const FormMap = ({
                     {label}
                 </p>
                 <Map
-                    className={`h-[380px] max-w-[380px] rounded-xl overflow-hidden relative`}
+                    className={`h-[370px] max-w-[380px] rounded-xl overflow-hidden relative`}
                     scrollWheelZoom={true}
                     centerLocation={centerLocation}
                     initialZoom={11}

@@ -22,6 +22,10 @@ const Event = db.define('Event', {
   finish_date: {
     type: DataTypes.DATE,
     allowNull: false
+  },
+  id_video: {
+    type: DataTypes.STRING(100),
+    allowNull: true
   }
 });
 

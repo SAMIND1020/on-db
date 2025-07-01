@@ -12,6 +12,7 @@ import {
 } from "../../contexts/PageContext";
 import { useGetGroups } from "../../hooks/models/useGroups";
 import Group from "../../models/Group";
+import Person from "../../models/Person";
 
 const GroupsPage = () => {
     const { page, setPage, pages } = useGroupPageContext();
@@ -24,12 +25,12 @@ const GroupsPage = () => {
                 <>
                     <Table columnNames={columnNames}>
                         {pages.length != 0 &&
-                            page.people instanceof Array &&
-                            page.people.map((person) => (
+                            page?.members instanceof Array &&
+                            page?.members.map((member) => (
                                 <TableRegistry
                                     columnNames={columnNames}
-                                    key={person.id}
-                                    data={person.toJSON()}
+                                    key={member.id}
+                                    data={member.toJSON()}
                                 />
                             ))}
                     </Table>
@@ -56,24 +57,35 @@ const GroupsPage = () => {
 const GroupPageContainer = () => {
     const [groupPages, setGroupPages] = useState([]);
 
-    const onLoadPage = (groups) => {
+    const onLoad = (groups) => {
         const newGroups = groups.map((group) => new Group(group));
 
         if (newGroups instanceof Array)
             setGroupPages(() =>
-                newGroups.map(({ name, events, people, id }) => ({
-                    name,
-                    path: `group-${id}`,
-                    events,
-                    people,
-                }))
+                newGroups.map(({ name, events, members, id }) => {
+                    const newPeople = members.map(
+                        ({ createdAt, updatedAt, ...person }) =>
+                            new Person({
+                                created_at: createdAt,
+                                updated_at: updatedAt,
+                                ...person,
+                            })
+                    );
+
+                    return {
+                        name,
+                        path: `group-${id}`,
+                        events,
+                        members: newPeople,
+                    };
+                })
             );
     };
 
-    useGetGroups({ onLoadPage });
+    useGetGroups({ onLoad });
 
     return (
-        <GroupPageProvider pages={groupPages} initialPage="group-1">
+        <GroupPageProvider pages={groupPages} initialPage="group-2">
             <GroupsPage />
         </GroupPageProvider>
     );

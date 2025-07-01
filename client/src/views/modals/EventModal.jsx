@@ -15,7 +15,7 @@ const EventModal = ({ eventInfo = {}, setEventInfo = () => {} }) => {
                 <p className="px-4 mb-6 text-selected dark:text-selected-dark text-sm font-normal leading-normal">
                     {eventInfo.description}
                 </p>
-                <p className="px-4 flex items-center w-fit">
+                <p className="px-4 flex items-center w-fit text-secondary">
                     <span className="material-icons-outlined -mr-4">
                         events
                     </span>

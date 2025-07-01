@@ -1,26 +1,18 @@
-export default class Person {
+export default class Service {
     constructor({
         id,
         name,
         description,
-        init_date,
-        finish_date,
         created_at,
         updated_at,
-        group_id,
-        group,
-        id_video
+        members,
     } = {}) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.init_date = init_date;
-        this.finish_date = finish_date;
         this.created_at = created_at;
         this.updated_at = updated_at;
-        this.group_id = group_id;
-        this.group = group;
-        this.id_video = id_video;
+        this.members = members;
     }
 
     toString() {

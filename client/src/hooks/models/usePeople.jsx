@@ -1,37 +1,14 @@
-import { useEffect, useState } from "react";
+import useAPIGet from "../api/useAPIGet";
+import Person from "../../models/Person";
 
-import { useServerContext } from "../../contexts/ServerContext";
+const useGetPeople = (options = {}) => {
+    const {data, api} = useAPIGet({
+        endpoint: "/people",
+        parser: (res) => (res.people || []).map((p) => new Person(p)),
+        ...options,
+    });
 
-const useGetPeople = ({ onLoadPage = () => {} }) => {
-    const { api } = useServerContext();
-
-    const [getPeopleResponse, setGetPeopleResponse] = useState({});
-
-    useEffect(() => {
-        if (Object.keys(getPeopleResponse).length === 0) {
-            fetchGetPeople();
-            return;
-        }
-
-        if (
-            Object.keys(getPeopleResponse).length !== 0 &&
-            getPeopleResponse?.people
-        ) {
-            onLoadPage(getPeopleResponse?.people);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [getPeopleResponse]);
-
-    const fetchGetPeople = async () => {
-        const res = await api.get("/people?page=1", undefined, {
-            validateToken: true,
-        });
-
-        setGetPeopleResponse(res);
-        return res;
-    };
-
-    return { getPeopleResponse, fetchGetPeople };
+    return { people: data, ...api };
 };
 
 export { useGetPeople };

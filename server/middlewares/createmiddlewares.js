@@ -1,3 +1,5 @@
+// TODO: Resolve problems with createMiddlewares and express-validator middlewares errors
+
 function createMiddlewares({ requiredMiddlewares = [], optionalMiddlewares = [] }) {
     return (options = {}) => {
         const { optional = {} } = options;

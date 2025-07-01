@@ -8,20 +8,11 @@ import Button from "../../components/general/Button";
 import CreatePersonModal from "../modals/CreatePersonModal";
 
 import { useGetPeople } from "../../hooks/models/usePeople";
-import Person from "../../models/Person";
 
 const PeoplePage = () => {
-    const [createPersonModal, setCreatePersonModal] = useState(false);
-    const [people, setPeople] = useState([]);
+    const [createPersonModal, setCreatePersonModal] = useState(true);
 
-    const onLoadPage = (people) => {
-        const newPeople = people.map(
-            (person) => new Person(person)
-        );
-        setPeople(newPeople);
-    };
-
-    useGetPeople({ onLoadPage });
+    const { people } = useGetPeople();
 
     const columnNames = ["id", "name", "email", "phone", "identity"];
 
