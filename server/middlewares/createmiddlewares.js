@@ -1,17 +1,19 @@
-// TODO: Resolve problems with createMiddlewares and express-validator middlewares errors
-
 function createMiddlewares({ requiredMiddlewares = [], optionalMiddlewares = [] }) {
-    return (options = {}) => {
-        const { optional = {} } = options;
-        const middlewares = [...optionalMiddlewares];
+  return (options = {}) => {
+    const { optional = false } = options;
+    const middlewares = [...optionalMiddlewares];
 
-        if (optional)
-            middlewares.push(...requiredMiddlewares.map(middleware => middleware.optional({ checkFalsy: true })));
-        else
-            middlewares.push(...requiredMiddlewares)
+    middlewares.push(
+      ...requiredMiddlewares.map(mw => {
+        if (typeof mw !== 'function' || typeof mw.run === 'function')
+          throw new Error("No es una funcion valida: () => check...");
 
-        return middlewares
-    }
+        return optional ? mw().optional({ checkFalsy: true }) : mw();
+      })
+    );
+
+    return middlewares;
+  };
 }
 
 module.exports = createMiddlewares;

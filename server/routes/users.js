@@ -22,15 +22,15 @@ const routes = Router();
 
 const middlewaresUsers = createMiddlewares({
     requiredMiddlewares: [
-        check('name', 'The name is required').not().isEmpty(),
-        check('password', 'The password must be more than 6 letters').isLength({ min: 6 }),
-        check('email', 'The email is not valid').isEmail(),
-        check('email').custom(emailUserExist),
-        check('rol', 'The rol is required').not().isEmpty(),
-        check('rol').isIn([ROLES_TYPES.ADMIN, ROLES_TYPES.INFLUENCER]),
-        check('person_id', 'The person_id is required').not().isEmpty(),
-        check('person_id').custom(personExistById),
-        check('person_id').custom(personIdUserExist)
+        () => check('name', 'The name is required').not().isEmpty(),
+        () => check('password', 'The password must be more than 6 letters').isLength({ min: 6 }),
+        () => check('email', 'The email is not valid').isEmail(),
+        () => check('email').custom(emailUserExist),
+        () => check('rol', 'The rol is required').not().isEmpty(),
+        () => check('rol').isIn([ROLES_TYPES.ADMIN, ROLES_TYPES.INFLUENCER]),
+        () => check('person_id', 'The person_id is required').not().isEmpty(),
+        () => check('person_id').custom(personExistById),
+        () => check('person_id').custom(personIdUserExist)
     ]
 })
 

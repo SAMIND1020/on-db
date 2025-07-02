@@ -30,14 +30,14 @@ const routes = Router();
 
 const middlewaresPeople = createMiddlewares({
     requiredMiddlewares: [
-        check("name", "The name must be a string").isString(),
-        check("email", "The email is not valid").isEmail(),
-        check('email').custom(emailPersonExist),
-        check("phone", "The phone is not valid").isNumeric(),
-        check('phone').custom(phonePersonExist),
-        check("identity", "The identity is not valid").isNumeric(),
-        check('identity').custom(identityPersonExist),
-        check('influencer_id').custom(influencerExistById)
+        () => check("name", "The name must be a string").isString(),
+        () => check("email", "The email is not valid").isEmail(),
+        () => check('email').custom(emailPersonExist),
+        () => check("phone", "The phone is not valid").isNumeric(),
+        () => check('phone').custom(phonePersonExist),
+        () => check("identity", "The identity is not valid").isNumeric(),
+        () => check('identity').custom(identityPersonExist),
+        () => check('influencer_id').custom(influencerExistById)
     ],
     optionalMiddlewares: [
         check('address_lat', "The address_lat must be a float").optional({ checkFalsy: true }).isFloat(),

@@ -17,8 +17,8 @@ const routes = Router();
 
 const middlewaresGroups = createMiddlewares({
     requiredMiddlewares: [
-        check("name", "The name is required").not().isEmpty(),
-        check("name", "The name must be a string").isString(),
+        () => check("name", "The name is required").not().isEmpty(),
+        () => check("name", "The name must be a string").isString(),
     ],
     optionalMiddlewares: [
         check("description", "The description must be a string").optional({ checkFalsy: true }).isString(),
