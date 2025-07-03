@@ -38,3 +38,9 @@ export const globalPages = Object.freeze([
         component: <LoginModal />,
     },
 ]);
+
+export const createPersonModalPages = Object.freeze([
+    ["name", "email", "identity", "phone", "familiy"],
+    ["id_type", "marital_status", "address"],
+    ["influencer_id"],
+]);

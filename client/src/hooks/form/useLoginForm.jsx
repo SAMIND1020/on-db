@@ -43,10 +43,10 @@ const useLoginForm = ({
         // console.log(loginResponse)
         if (Object.keys(loginResponse).length === 0) return;
 
-        if (!loginResponse.token)
+        if (!loginResponse.token || !loginResponse.headers.ok)
             return setAlert({
                 type: ALERT_TYPES.ERROR,
-                text: "The password is incorrect.",
+                text: loginResponse.msg,
             });
 
         setAlert({

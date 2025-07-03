@@ -11,7 +11,7 @@ const ServerProvider = ({ children }) => {
 
         if (validateToken && !serverToken) return {};
 
-        const response = await fetch(
+        const res = await fetch(
             `${import.meta.env.VITE_SERVER_URL}/server${url}`,
             {
                 method,
@@ -23,9 +23,10 @@ const ServerProvider = ({ children }) => {
                 body: method !== "GET" ? JSON.stringify(body) : undefined,
             }
         );
+        const jsonRes = await res.json();
 
         // TODO: First restart errors(login error "Password incorrect" doesn´t work in the first load)
-        return await response.json();
+        return { ...jsonRes, headers: { ok: res.ok, status: res.status } };
     };
 
     const api = {

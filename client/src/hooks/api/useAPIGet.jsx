@@ -15,13 +15,13 @@ const useAPIGet = ({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const fetchData = useCallback(async () => {
+    const getData = useCallback(async () => {
         setLoading(true);
         setError(null);
 
         const res = await api.get(`${endpoint}?page=${page}`, undefined, {
             validateToken: true,
-        });
+        }); 
 
         const parsed = parser(res);
         setData(parsed);
@@ -31,10 +31,10 @@ const useAPIGet = ({
     },[api, endpoint, page]);
 
     useEffect(() => {
-        if (autoLoad) fetchData();
-    }, [autoLoad, fetchData]);
+        if (autoLoad) getData();
+    }, [autoLoad, getData]);
 
-    return { data, loading, error, fetchData };
+    return { data, loading, error, getData };
 };
 
 export default useAPIGet;

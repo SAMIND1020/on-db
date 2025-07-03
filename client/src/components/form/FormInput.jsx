@@ -1,4 +1,6 @@
 /* eslint-disable react/prop-types */
+import Alert from "../../components/general/Alert";
+
 import { capitalizeWithSpaces, lowercaseWithUnderscores } from "../../helpers";
 import { INPUT_TYPES } from "../../types";
 
@@ -10,6 +12,7 @@ const FormInput = ({
     values = [],
     value = "",
     checkbox_cols = 2,
+    alert = {},
 }) => {
     const isInputType =
         type === INPUT_TYPES.TEXT ||
@@ -20,9 +23,16 @@ const FormInput = ({
     return (
         <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label className="flex flex-col min-w-40 flex-1">
-                <p className="text-text dark:text-text-dark text-base font-medium leading-normal pb-2">
-                    {label}
-                </p>
+                <div className="flex flex-row justify-between">
+                    <p className="text-text dark:text-text-dark text-base font-medium leading-normal pb-2">
+                        {label}
+                    </p>
+                    {Object.keys(alert).length != 0 && (
+                        <Alert type={alert.type} size="sm">
+                            {alert.text}
+                        </Alert>
+                    )}
+                </div>
                 {isInputType && (
                     <input
                         value={value}

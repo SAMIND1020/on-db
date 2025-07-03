@@ -6,10 +6,13 @@ import SearchLocation from "../map/SearchLocation";
 import Map from "../map/Map";
 import useReverseGeocoding from "../../hooks/location/useReverseGeocoding";
 
+import Alert from "../general/Alert";
+
 const FormMap = ({
     label,
     centerLocation = [4.653374, -74.08363],
     onChange = () => {},
+    alert = {},
 }) => {
     // States
     const [isMapClickable, setIsMapClickable] = useState(true);
@@ -74,9 +77,16 @@ const FormMap = ({
     return (
         <div className="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
             <label className="flex flex-col min-w-40 flex-1">
-                <p className="text-text dark:text-text-dark text-base font-medium leading-normal pb-2">
-                    {label}
-                </p>
+                <div className="flex flex-row justify-between">
+                    <p className="text-text dark:text-text-dark text-base font-medium leading-normal pb-2">
+                        {label}
+                    </p>
+                    {Object.keys(alert).length != 0 && (
+                        <Alert type={alert.type} size="sm">
+                            {alert.text}
+                        </Alert>
+                    )}
+                </div>
                 <Map
                     className={`h-[370px] max-w-[380px] rounded-xl overflow-hidden relative`}
                     scrollWheelZoom={true}

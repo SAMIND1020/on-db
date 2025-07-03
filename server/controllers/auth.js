@@ -11,19 +11,22 @@ const login = async (req, res) => {
     try {
         const user = await User.findOne({ where: { email } });
 
+        // If the user isn't exist
+        if (!user) return res.status(400).json({
+            msg: "The email or the password isn't correct",
+        })
+
         // If the password isn't valid
         const validatePassword = bcrypt.compareSync(
             password,
             user.password
         );
-        if (!validatePassword) return false;
 
-        if (!user) return res.status(400).json({
+        if (!validatePassword) return res.status(400).json({
             msg: "The email or the password isn't correct",
         })
 
         const payload = { id: user.id, email: user.email }
-
 
         // Generate JWT
         const token = await generateJWT(payload);

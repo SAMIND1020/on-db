@@ -52,7 +52,7 @@ const App = () => {
 };
 
 const AppGlobalPages = () => (
-    <GlobalPageProvider pages={globalPages} initialPage="people">
+    <GlobalPageProvider pages={globalPages} initialPage="home">
         <App />
     </GlobalPageProvider>
 );

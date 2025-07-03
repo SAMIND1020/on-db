@@ -98,3 +98,20 @@ export const decryptToken = (encryptedToken) => {
     }
     return "";
 };
+
+export const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+export const phoneRegex = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]{7,14}$/;
+
+export const getFirstErrorPageIndex = (errors, pages) => {
+    for (let i = 0; i < pages.length; i++) {
+        const pageFields = pages[i];
+
+        const hasErrorInPage = Object.keys(errors).some((error) =>
+            pageFields.includes(error)
+        );
+
+        if (hasErrorInPage) return i;
+    }
+
+    return null;
+};

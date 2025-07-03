@@ -2,32 +2,83 @@ import { useState } from "react";
 import Form from "../../components/form/Form";
 import FormInput from "../../components/form/FormInput";
 import FormMap from "../../components/form/FormMap";
+import Alert from "../../components/general/Alert";
 
+import useCreatePersonForm from "../../hooks/form/useCreatePersonForm";
 import { useGetGroups } from "../../hooks/models/useGroups";
 import { useGetUsers } from "../../hooks/models/useUsers";
 import { useGetServices } from "../../hooks/models/useServices";
+import { useGlobalPageContext } from "../../contexts/PageContext";
 
 import { INPUT_TYPES, ID_TYPE_TYPES, MARITAL_STATUS_TYPES } from "../../types";
 
+import { usePostPerson } from "../../hooks/models/usePeople";
+
+/*
+const defaultFormData = {
+    name: "Diego Agudelo",
+    email: "dieagudeloaa@local.com",
+    phone: "75078437",
+    identity: "3007776096",
+    address_lat: 0,
+    address_lon: 0,
+    id_type: ID_TYPE_TYPES[0].value,
+    family: "Agudelo Angulo",
+    marital_status: MARITAL_STATUS_TYPES[1],
+    influencer: "",
+    groups: ["Hombres", "Parejas"],
+    services: ["Ofrenda"],
+};
+*/
+
+const defaultFormData = {
+    name: "",
+    email: "",
+    phone: "",
+    identity: "",
+    address_lat: 0,
+    address_lon: 0,
+    id_type: ID_TYPE_TYPES[0].value,
+    family: "",
+    marital_status: MARITAL_STATUS_TYPES[0],
+    influencer: "",
+    groups: [],
+    services: [],
+};
+
 const CreatePersonModal = () => {
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        identity: "",
-        address_lat: 0,
-        address_lon: 0,
-        id_type: ID_TYPE_TYPES[0].value,
-        family: "",
-        marital_status: MARITAL_STATUS_TYPES[0],
-        influencer: "",
-        groups: [],
-        services: [],
-    });
+    const [formData, setFormData] = useState(defaultFormData);
+
+    const { setPage } = useGlobalPageContext();
+
+    const onLoadInfluencers = (res) => {
+        const influencers = res.filter(({ rol }) => rol === "Influencer");
+        if (influencers?.length !== 0)
+            handleInputChange(influencers?.[0].id, "influencer_id");
+    };
 
     const { groups: groupsValues } = useGetGroups();
-    const { users: influencersValues } = useGetUsers();
     const { services: servicesValues } = useGetServices();
+    const { users: influencersValues } = useGetUsers({
+        onLoad: onLoadInfluencers,
+    });
+
+    const onSuccess = ({ setAlert, setPageFn }) =>
+        setTimeout(() => {
+            setFormData(defaultFormData);
+
+            setAlert({});
+            setPageFn(1);
+            setPage("people");
+        }, 1500);
+
+    const { postData, postResponse } = usePostPerson();
+    const { errors, handleOnSubmit, alert } = useCreatePersonForm({
+        formData,
+        postData,
+        postResponse,
+        onSuccess,
+    });
 
     const handleInputChange = (value, key) => {
         setFormData((prevData) => ({ ...prevData, [key]: value }));
@@ -36,7 +87,7 @@ const CreatePersonModal = () => {
     return (
         <div className="mix-w-[400px] h-full">
             <Form
-                onSubmit={() => {}}
+                onSubmit={handleOnSubmit}
                 title="Create new person"
                 description="Use this form to create a new person in your database"
                 pages={3}
@@ -48,6 +99,7 @@ const CreatePersonModal = () => {
                         label="Name"
                         placeholder="John"
                         onChange={(value) => handleInputChange(value, "name")}
+                        alert={errors.name}
                     />
                     <FormInput
                         value={formData.email}
@@ -55,6 +107,7 @@ const CreatePersonModal = () => {
                         label="Email"
                         placeholder="john@gmail.com"
                         onChange={(value) => handleInputChange(value, "email")}
+                        alert={errors.email}
                     />
                     <FormInput
                         value={formData.identity}
@@ -64,6 +117,7 @@ const CreatePersonModal = () => {
                         onChange={(value) =>
                             handleInputChange(value, "identity")
                         }
+                        alert={errors.identity}
                     />
                     <FormInput
                         value={formData.phone}
@@ -71,6 +125,7 @@ const CreatePersonModal = () => {
                         label="Phone"
                         placeholder="(+57) 300 7890876"
                         onChange={(value) => handleInputChange(value, "phone")}
+                        alert={errors.phone}
                     />
                     <FormInput
                         value={formData.family}
@@ -78,6 +133,7 @@ const CreatePersonModal = () => {
                         label="Family"
                         placeholder="Anthony Virgil"
                         onChange={(value) => handleInputChange(value, "family")}
+                        alert={errors.family}
                     />
                 </div>
 
@@ -90,6 +146,7 @@ const CreatePersonModal = () => {
                         onChange={(value) =>
                             handleInputChange(value, "id_type")
                         }
+                        alert={errors.marital_status}
                     />
                     <FormInput
                         value={formData.marital_status}
@@ -99,6 +156,7 @@ const CreatePersonModal = () => {
                         onChange={(value) =>
                             handleInputChange(value, "marital_status")
                         }
+                        alert={errors.marital_status}
                     />
                     <FormMap
                         label="Address"
@@ -106,6 +164,7 @@ const CreatePersonModal = () => {
                             handleInputChange(lat, "address_lat");
                             handleInputChange(lng, "address_lon");
                         }}
+                        alert={errors.address}
                     />
                 </div>
 
@@ -116,6 +175,7 @@ const CreatePersonModal = () => {
                         values={groupsValues.map((g) => g.name)}
                         label="Groups"
                         onChange={(value) => handleInputChange(value, "groups")}
+                        alert={errors.groups}
                     />
                     <FormInput
                         value={formData.services}
@@ -125,16 +185,25 @@ const CreatePersonModal = () => {
                         onChange={(value) =>
                             handleInputChange(value, "services")
                         }
+                        alert={errors.services}
                     />
                     <FormInput
                         value={formData.influencer}
                         type={INPUT_TYPES.SELECT}
-                        values={influencersValues.map((i) => i.name)}
+                        values={influencersValues
+                            .filter(({ rol }) => rol === "Influencer")
+                            .map((i) => ({ label: i.name, value: i.id }))}
                         label="Influencer"
                         onChange={(value) =>
-                            handleInputChange(value, "influencer")
+                            handleInputChange(value, "influencer_id")
                         }
+                        alert={errors.influencer_id}
                     />
+                    <div className="mt-4">
+                        {Object.keys(alert).length != 0 && (
+                            <Alert type={alert.type}>{alert.text}</Alert>
+                        )}
+                    </div>
                 </div>
             </Form>
         </div>

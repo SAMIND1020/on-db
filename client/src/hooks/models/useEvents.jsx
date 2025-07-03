@@ -2,13 +2,13 @@ import useAPIGet from "../api/useAPIGet";
 import Event from "../../models/Event";
 
 const useGetEvents = (options = {}) => {
-    const {data, api} = useAPIGet({
+    const { data, loading, error, getData } = useAPIGet({
         endpoint: "/events",
         parser: (res) => (res.events || []).map((p) => new Event(p)),
         ...options,
     });
 
-    return { events: data, ...api };
+    return { events: data, loading, error, getData };
 };
 
 export { useGetEvents };

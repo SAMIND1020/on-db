@@ -60,7 +60,15 @@ const Form = ({
                 <Button
                     onClick={
                         pages === page
-                            ? () => onSubmit()
+                            ? () =>
+                                  onSubmit({
+                                      changePage: (newPage) =>
+                                          newPage > 0 && newPage <= pages
+                                              ? setPage(newPage)
+                                              : console.error(
+                                                    "Pagina fuera del rango"
+                                                ),
+                                  })
                             : () => setPage(page + 1)
                     }
                 >
