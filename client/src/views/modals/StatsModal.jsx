@@ -55,19 +55,23 @@ const StatsModal = ({ groups, people, events }) => {
                 <div className="flex gap-3">
                     <div className="rounded-xl h-44 w-full border border-selected dark:border-selected-dark py-3 px-2">
                         <BarChart
-                            data={groups.map((g) => ({
-                                data: [g.events.length],
-                                label: g.name,
-                            }))}
+                            data={groups
+                                .filter((g) => g.events.length !== 0)
+                                .map((g) => ({
+                                    data: [g.events.length],
+                                    label: g.name,
+                                }))}
                             labels={["Events Per Group"]}
                         />
                     </div>
                     <div className="rounded-xl h-44 w-full border border-selected dark:border-selected-dark py-3 px-2">
                         <BarChart
-                            data={groups.map((g) => ({
-                                data: [g.members.length],
-                                label: g.name,
-                            }))}
+                            data={groups
+                                .filter((g) => g.members.length !== 0)
+                                .map((g) => ({
+                                    data: [g.members.length],
+                                    label: g.name,
+                                }))}
                             labels={["People Per Group"]}
                         />
                     </div>

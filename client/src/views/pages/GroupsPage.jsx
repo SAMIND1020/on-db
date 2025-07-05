@@ -64,12 +64,7 @@ const GroupPageContainer = () => {
             setGroupPages(() =>
                 newGroups.map(({ name, events, members, id }) => {
                     const newPeople = members.map(
-                        ({ createdAt, updatedAt, ...person }) =>
-                            new Person({
-                                created_at: createdAt,
-                                updated_at: updatedAt,
-                                ...person,
-                            })
+                        (person) => new Person(person)
                     );
 
                     return {

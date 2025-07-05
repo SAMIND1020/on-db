@@ -52,7 +52,10 @@ const App = () => {
 };
 
 const AppGlobalPages = () => (
-    <GlobalPageProvider pages={globalPages} initialPage="home">
+    <GlobalPageProvider
+        pages={globalPages}
+        initialPage={localStorage.getItem("page") || "home"}
+    >
         <App />
     </GlobalPageProvider>
 );

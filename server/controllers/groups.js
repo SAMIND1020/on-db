@@ -5,7 +5,7 @@ const getGroups = async (req, res) => {
     const { page = 1 } = req.query;
 
     // Set the limit(default: 5) and the offset(defined by page)
-    const limit = 5;
+    const limit = 10;
     const offset = limit * (Number(page) - 1);
 
     // Find all groups(limit by page) and count number of active groups

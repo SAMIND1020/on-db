@@ -11,10 +11,18 @@ import { useGetPeople } from "../../hooks/models/usePeople";
 
 const PeoplePage = () => {
     const [createPersonModal, setCreatePersonModal] = useState(false);
+    const [paginationPage, setPaginationPage] = useState(1);
 
-    const { people } = useGetPeople();
+    const { people } = useGetPeople({ page: paginationPage });
 
     const columnNames = ["id", "name", "email", "phone", "identity"];
+
+    const onChangePage = (page) => {
+        if (page < 1) return;
+
+        setPaginationPage(page);
+    };
+
 
     return (
         <>
@@ -35,7 +43,10 @@ const PeoplePage = () => {
                         />
                     ))}
                 </Table>
-                <PaginationPanel />
+                <PaginationPanel
+                    page={paginationPage}
+                    onChangePage={onChangePage}
+                />
             </Page>
             {createPersonModal && <CreatePersonModal />}
         </>

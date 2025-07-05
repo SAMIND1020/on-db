@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { createContext, useContext, useEffect, useState } from "react";
 
-const createPageContext = () => {
+const createPageContext = ({ localStorage: _localStorage }) => {
     const PageContext = createContext();
 
     const PageProvider = ({ children, pages, initialPage = "home" }) => {
@@ -14,10 +14,14 @@ const createPageContext = () => {
                 return;
             }
 
-            _setPage([])
+            _setPage([]);
 
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [pages]);
+
+        useEffect(() => {
+            if (_localStorage) localStorage.setItem("page", page.path);
+        }, [page]);
 
         const setPage = (newPage = "home") => {
             const targetPage = pages.find((p) => p.path === newPage);
@@ -52,12 +56,12 @@ const createPageContext = () => {
 export const {
     PageProvider: GlobalPageProvider,
     usePageContext: useGlobalPageContext,
-} = createPageContext();
+} = createPageContext({ localStorage: true });
 
 // Group-specific pages
 export const {
     PageProvider: GroupPageProvider,
     usePageContext: useGroupPageContext,
-} = createPageContext();
+} = createPageContext({ localStorage: false });
 
 export default createPageContext;

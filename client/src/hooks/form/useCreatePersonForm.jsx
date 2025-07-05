@@ -15,7 +15,7 @@ const useLoginForm = ({
 }) => {
     const [errors, setErrors] = useState({});
     const [alert, setAlert] = useState({});
-    const [changePageFn, setChangePageFn] = useState(() => {});
+    const [changePageFn, setChangePageFn] = useState(() => () => {});
 
     const handleOnSubmit = ({ changePage }) => {
         setChangePageFn(() => changePage);
@@ -44,7 +44,7 @@ const useLoginForm = ({
 
             changePageFn(firstErrorPage + 1);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [errors]);
 
     useEffect(() => {
@@ -59,7 +59,6 @@ const useLoginForm = ({
                 };
                 return acc;
             }, {});
-
 
             return setErrors(newErrors);
         }

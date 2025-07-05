@@ -13,8 +13,9 @@ const Form = ({
     className,
     submitButtonText = "Save and close",
     onSubmit = () => {},
+    initPage = 1
 }) => {
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(initPage);
 
     const inputsPerPage = children.length / pages;
 

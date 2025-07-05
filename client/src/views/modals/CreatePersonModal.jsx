@@ -41,15 +41,13 @@ const defaultFormData = {
     id_type: ID_TYPE_TYPES[0].value,
     family: "",
     marital_status: MARITAL_STATUS_TYPES[0],
-    influencer: "",
+    influencer_id: 0,
     groups: [],
     services: [],
 };
 
 const CreatePersonModal = () => {
     const [formData, setFormData] = useState(defaultFormData);
-
-    const { setPage } = useGlobalPageContext();
 
     const onLoadInfluencers = (res) => {
         const influencers = res.filter(({ rol }) => rol === "Influencer");
@@ -62,15 +60,18 @@ const CreatePersonModal = () => {
     const { users: influencersValues } = useGetUsers({
         onLoad: onLoadInfluencers,
     });
+    const { setPage } = useGlobalPageContext();
 
-    const onSuccess = ({ setAlert, setPageFn }) =>
+    const onSuccess = ({ setAlert, setPageFn }) => {
+        setPage("people");
         setTimeout(() => {
             setFormData(defaultFormData);
 
             setAlert({});
             setPageFn(1);
-            setPage("people");
+            window.location.reload();
         }, 1500);
+    };
 
     const { postData, postResponse } = usePostPerson();
     const { errors, handleOnSubmit, alert } = useCreatePersonForm({
@@ -159,6 +160,10 @@ const CreatePersonModal = () => {
                         alert={errors.marital_status}
                     />
                     <FormMap
+                        value={{
+                            lat: formData.address_lat,
+                            lng: formData.address_lon,
+                        }}
                         label="Address"
                         onChange={({ latlng: { lat, lng } }) => {
                             handleInputChange(lat, "address_lat");
@@ -188,7 +193,7 @@ const CreatePersonModal = () => {
                         alert={errors.services}
                     />
                     <FormInput
-                        value={formData.influencer}
+                        value={formData.influencer_id}
                         type={INPUT_TYPES.SELECT}
                         values={influencersValues
                             .filter(({ rol }) => rol === "Influencer")

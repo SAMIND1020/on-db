@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import SearchInput from "../navigation_and_filters/SearchInput";
 import useSearchLocations from "../../hooks/location/useSearchLocations";
 
-const SearchLocation = ({ onSelect = () => {} }) => {
+const SearchLocation = ({ onSelect = () => {}, fullscreen }) => {
     const [input, setInput] = useState("");
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
     const dropdownRef = useRef(null); // Ref to handle clicks outside the dropdown
@@ -42,9 +42,11 @@ const SearchLocation = ({ onSelect = () => {} }) => {
     return (
         <div className="relative z-[400]" ref={dropdownRef}>
             <div
-                className={`w-60 absolute right-0 ${
+                className={`absolute right-0 ${
                     isDropdownVisible && "bg-white shadow-md rounded-bl-lg"
-                }`}
+                }
+                ${!fullscreen ? "w-60" : "w-1/3"}
+                `}
             >
                 <SearchInput
                     placeholder="Search for a location..."

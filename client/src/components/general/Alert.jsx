@@ -11,7 +11,7 @@ const Alert = ({ children, type, size = "md" }) => {
 
     const sizeStyle =
         size === "sm"
-            ? "px-1 pt-1 my-1 rounded-lg text-xs"
+            ? "px-1 pt-1 pb-[3px] rounded-lg text-xs line-clamp-1 overflow-hidden text-ellipsis hover:line-clamp-none hover:mb-2 max-w-[225px] h-fit leading-tight"
             : size === "md"
             ? "p-3 rounded-xl text-[14.5px]"
             : "";

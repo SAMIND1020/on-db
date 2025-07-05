@@ -14,8 +14,10 @@ export default class Person {
         id_type,
         family,
         marital_status,
+        influencerId,
         influencer_id,
-        influencer,
+        createdAt,
+        updatedAt,
         created_at,
         updated_at,
     } = {}) {
@@ -29,10 +31,9 @@ export default class Person {
         this.id_type = id_type;
         this.family = family;
         this.marital_status = marital_status;
-        this.influencer_id = influencer_id;
-        this.influencer = influencer;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
+        this.influencer_id = influencerId || influencer_id;
+        this.created_at = createdAt || created_at;
+        this.updated_at = updatedAt || updated_at;
     }
 
     toString() {
