@@ -10,21 +10,40 @@ import EventModal from "../modals/EventModal";
 import { useGetEvents } from "../../hooks/models/useEvents";
 
 const EventsPage = () => {
-    const [createEventModal, setCreateEventModal] = useState(false);
+    const [activeModal, setActiveModal] = useState("create");
     const [eventInfo, setEventInfo] = useState({});
-    
-    const {events} = useGetEvents();
 
-    const handleOnClickEvent = ({ event }) =>
-        setEventInfo(events.find((e) => e.id == event.id));
+    const { events } = useGetEvents();
+
+    const handleModal = (type, info = {}) => {
+        if (!type) {
+            setActiveModal(null);
+            setEventInfo({});
+            return;
+        }
+
+        setEventInfo(info);
+        setActiveModal(type);
+    };
+
+    const handleOnClickEvent = ({ event }) => {
+        const selected = events.find((e) => e.id == event.id);
+        if (selected) handleModal("info", selected);
+    };
 
     return (
         <>
             <Page
                 title="Events"
                 actionButtons={
-                    <Button onClick={() => setCreateEventModal((c) => !c)}>
-                        {!createEventModal ? "New Event" : "Close"}
+                    <Button
+                        onClick={() =>
+                            activeModal === "create"
+                                ? handleModal(null)
+                                : handleModal("create")
+                        }
+                    >
+                        {activeModal === "create" ? "Close" : "New Event"}
                     </Button>
                 }
                 widthFull
@@ -45,9 +64,12 @@ const EventsPage = () => {
                     }))}
                 />
             </Page>
-            {createEventModal && <CreateEventModal />}
-            {Object.keys(eventInfo).length != 0 && (
-                <EventModal eventInfo={eventInfo} setEventInfo={setEventInfo} />
+            {activeModal === "create" && <CreateEventModal />}
+            {activeModal === "info" && Object.keys(eventInfo).length != 0 && (
+                <EventModal
+                    eventInfo={eventInfo}
+                    setEventInfo={() => handleModal(null)}
+                />
             )}
         </>
     );

@@ -10,7 +10,7 @@ import CreatePersonModal from "../modals/CreatePersonModal";
 import { useGetPeople } from "../../hooks/models/usePeople";
 
 const PeoplePage = () => {
-    const [createPersonModal, setCreatePersonModal] = useState(true);
+    const [createPersonModal, setCreatePersonModal] = useState(false);
     const [paginationPage, setPaginationPage] = useState(1);
 
     const { people } = useGetPeople({ page: paginationPage });

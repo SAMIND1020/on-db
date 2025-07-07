@@ -15,34 +15,19 @@ import { INPUT_TYPES, ID_TYPE_TYPES, MARITAL_STATUS_TYPES } from "../../types";
 import { usePostPerson } from "../../hooks/models/usePeople";
 
 const defaultFormData = {
-    name: "Diego Agudelo",
-    email: "dieagudeloaa@local.com",
-    phone: "75078437",
-    identity: "3007776096",
-    address_lat: 4.60144993252414,
-    address_lon: -74.12802815437318,
+    name: "",
+    email: "",
+    phone: "",
+    identity: "",
+    address_lat: 0,
+    address_lon: 0,
     id_type: ID_TYPE_TYPES[0].value,
-    family: "Agudelo Angulo",
-    marital_status: MARITAL_STATUS_TYPES[1],
+    family: "",
+    marital_status: MARITAL_STATUS_TYPES[0],
     influencer_id: 0,
-    groups: ["Hombres", "Parejas"],
-    services: ["Ofrenda"],
+    groups: [],
+    services: [],
 };
-
-// const defaultFormData = {
-//     name: "",
-//     email: "",
-//     phone: "",
-//     identity: "",
-//     address_lat: 0,
-//     address_lon: 0,
-//     id_type: ID_TYPE_TYPES[0].value,
-//     family: "",
-//     marital_status: MARITAL_STATUS_TYPES[0],
-//     influencer_id: 0,
-//     groups: [],
-//     services: [],
-// };
 
 const CreatePersonModal = () => {
     const [formData, setFormData] = useState(defaultFormData);
@@ -96,7 +81,6 @@ const CreatePersonModal = () => {
                 title="Create new person"
                 description="Use this form to create a new person in your database"
                 pages={3}
-                initPage={3}
             >
                 <div>
                     <FormInput
