@@ -18,6 +18,8 @@ export default class Person {
         influencer_id,
         createdAt,
         updatedAt,
+        groups,
+        services,
         created_at,
         updated_at,
     } = {}) {
@@ -31,6 +33,8 @@ export default class Person {
         this.id_type = id_type;
         this.family = family;
         this.marital_status = marital_status;
+        this.groups = groups;
+        this.services = services;
         this.influencer_id = influencerId || influencer_id;
         this.created_at = createdAt || created_at;
         this.updated_at = updatedAt || updated_at;

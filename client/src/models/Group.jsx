@@ -7,14 +7,16 @@ export default class Group {
         updated_at,
         events,
         members,
+        createdAt,
+        updatedAt,
     } = {}) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
         this.events = events;
         this.members = members;
+        this.created_at = createdAt || created_at;
+        this.updated_at = updatedAt || updated_at;
     }
 
     toString() {

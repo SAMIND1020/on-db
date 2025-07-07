@@ -115,3 +115,14 @@ export const getFirstErrorPageIndex = (errors, pages) => {
 
     return null;
 };
+
+export const updateCollections = (dataArray, putFn, personId) => {
+    if (!dataArray.length) return;
+
+    dataArray.forEach((item) => {
+        const body = {
+            members: [...item.members.map(({ id }) => id), personId],
+        };
+        putFn(body, item.toJSON().id);
+    });
+};

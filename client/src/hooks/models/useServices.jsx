@@ -1,4 +1,5 @@
 import useAPIGet from "../api/useAPIGet";
+import useAPIPut from "../api/useAPIPut";
 import Service from "../../models/Service";
 
 const useGetServices = (options = {}) => {
@@ -11,4 +12,13 @@ const useGetServices = (options = {}) => {
     return { services: data, loading, error, getData };
 };
 
-export { useGetServices };
+const usePutServices = (options = {}) => {
+    const { data, loading, error, putData } = useAPIPut({
+        endpoint: "/services",
+        ...options,
+    });
+
+    return { putResponse: data, loading, error, putData };
+};
+
+export { useGetServices, usePutServices };

@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 
 import { ALERT_TYPES } from "../../types";
+import { updateCollections } from "../../helpers";
 
 import { createPersonModalPages as pages } from "../../types/pages";
 import { getFirstErrorPageIndex } from "../../helpers";
+
+import { usePutGroups } from "../models/useGroups";
+import { usePutServices } from "../models/useServices";
 
 import Person from "../../models/Person";
 
@@ -11,11 +15,16 @@ const useLoginForm = ({
     formData,
     onSuccess = () => {},
     postData = () => {},
+    groupsData = [],
+    servicesData = [],
     postResponse = {},
 }) => {
     const [errors, setErrors] = useState({});
     const [alert, setAlert] = useState({});
     const [changePageFn, setChangePageFn] = useState(() => () => {});
+
+    const { putData: putGroups } = usePutGroups();
+    const { putData: putServices } = usePutServices();
 
     const handleOnSubmit = ({ changePage }) => {
         setChangePageFn(() => changePage);
@@ -62,6 +71,14 @@ const useLoginForm = ({
 
             return setErrors(newErrors);
         }
+
+        if (!postResponse?.person?.id) return;
+
+        // Set relation of user with the groups and services
+        const personId = postResponse?.person?.id;
+
+        updateCollections(groupsData, putGroups, personId);
+        updateCollections(servicesData, putServices, personId);
 
         setAlert({
             type: ALERT_TYPES.SUCCESS,

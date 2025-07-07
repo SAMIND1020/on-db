@@ -6,45 +6,43 @@ import Alert from "../../components/general/Alert";
 
 import useCreatePersonForm from "../../hooks/form/useCreatePersonForm";
 import { useGetGroups } from "../../hooks/models/useGroups";
-import { useGetUsers } from "../../hooks/models/useUsers";
 import { useGetServices } from "../../hooks/models/useServices";
+import { useGetUsers } from "../../hooks/models/useUsers";
 import { useGlobalPageContext } from "../../contexts/PageContext";
 
 import { INPUT_TYPES, ID_TYPE_TYPES, MARITAL_STATUS_TYPES } from "../../types";
 
 import { usePostPerson } from "../../hooks/models/usePeople";
 
-/*
 const defaultFormData = {
     name: "Diego Agudelo",
     email: "dieagudeloaa@local.com",
     phone: "75078437",
     identity: "3007776096",
-    address_lat: 0,
-    address_lon: 0,
+    address_lat: 4.60144993252414,
+    address_lon: -74.12802815437318,
     id_type: ID_TYPE_TYPES[0].value,
     family: "Agudelo Angulo",
     marital_status: MARITAL_STATUS_TYPES[1],
-    influencer: "",
+    influencer_id: 0,
     groups: ["Hombres", "Parejas"],
     services: ["Ofrenda"],
 };
-*/
 
-const defaultFormData = {
-    name: "",
-    email: "",
-    phone: "",
-    identity: "",
-    address_lat: 0,
-    address_lon: 0,
-    id_type: ID_TYPE_TYPES[0].value,
-    family: "",
-    marital_status: MARITAL_STATUS_TYPES[0],
-    influencer_id: 0,
-    groups: [],
-    services: [],
-};
+// const defaultFormData = {
+//     name: "",
+//     email: "",
+//     phone: "",
+//     identity: "",
+//     address_lat: 0,
+//     address_lon: 0,
+//     id_type: ID_TYPE_TYPES[0].value,
+//     family: "",
+//     marital_status: MARITAL_STATUS_TYPES[0],
+//     influencer_id: 0,
+//     groups: [],
+//     services: [],
+// };
 
 const CreatePersonModal = () => {
     const [formData, setFormData] = useState(defaultFormData);
@@ -60,15 +58,15 @@ const CreatePersonModal = () => {
     const { users: influencersValues } = useGetUsers({
         onLoad: onLoadInfluencers,
     });
+
     const { setPage } = useGlobalPageContext();
 
-    const onSuccess = ({ setAlert, setPageFn }) => {
+    const onSuccess = ({ setAlert }) => {
         setPage("people");
         setTimeout(() => {
             setFormData(defaultFormData);
 
             setAlert({});
-            setPageFn(1);
             window.location.reload();
         }, 1500);
     };
@@ -76,6 +74,12 @@ const CreatePersonModal = () => {
     const { postData, postResponse } = usePostPerson();
     const { errors, handleOnSubmit, alert } = useCreatePersonForm({
         formData,
+        groupsData: groupsValues.filter(({ name }) =>
+            formData.groups.includes(name)
+        ),
+        servicesData: servicesValues.filter(({ name }) =>
+            formData.services.includes(name)
+        ),
         postData,
         postResponse,
         onSuccess,
@@ -92,6 +96,7 @@ const CreatePersonModal = () => {
                 title="Create new person"
                 description="Use this form to create a new person in your database"
                 pages={3}
+                initPage={3}
             >
                 <div>
                     <FormInput
