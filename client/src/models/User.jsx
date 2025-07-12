@@ -1,31 +1,17 @@
-export default class Person {
-    constructor({
-        id,
-        name,
-        email,
-        rol,
-        created_at,
-        updated_at,
-        createdAt,
-        updatedAt,
-    } = {}) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.rol = rol;
-        this.created_at = createdAt || created_at;
-        this.updated_at = updatedAt || updated_at;
-    }
+import BaseModel from "./BaseModel";
 
-    toString() {
-        return `Name: ${this.name}\nEmail: ${this.email}\nRol: ${this.rol}\n...`;
-    }
+export default class Event extends BaseModel {
+    constructor(raw = {}) {
+        const data = {
+            ...raw,
+            created_at: raw.createdAt ?? raw.created_at,
+            updated_at: raw.updatedAt ?? raw.updated_at,
+        };
 
-    toJSON() {
-        return { ...this };
-    }
+        super(data);
 
-    getProperties() {
-        return Object.getOwnPropertyNames(this);
+        this.name = data.name;
+        this.email = data.email;
+        this.rol = data.rol;
     }
 }

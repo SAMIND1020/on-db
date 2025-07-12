@@ -12,10 +12,10 @@ const EventModal = ({ eventInfo = {}, setEventInfo = () => {} }) => {
             }
         >
             <div className="w-[320px]">
-                <p className="px-4 mb-6 text-selected dark:text-selected-dark text-sm font-normal leading-normal">
+                <p className="px-4 mb-6 text-selected-dark dark:text-selected text-sm font-normal leading-normal">
                     {eventInfo.description}
                 </p>
-                <p className="px-4 flex items-center w-fit text-secondary">
+                <p className="px-4 flex items-center w-fit dark:text-secondary">
                     <span className="material-icons-outlined -mr-4">
                         events
                     </span>
@@ -28,6 +28,17 @@ const EventModal = ({ eventInfo = {}, setEventInfo = () => {} }) => {
                     </span>
                     {new Date(eventInfo.finish_date).toLocaleDateString("en")}
                 </p>
+                <div className="flex justify-between mt-5">
+                    <div></div>
+                    <div className="flex flex-row gap-2">
+                        <Button onClick={() => {}} icon>
+                            edit
+                        </Button>
+                        <Button onClick={() => {}} icon>
+                            delete
+                        </Button>
+                    </div>
+                </div>
             </div>
         </Page>
     );

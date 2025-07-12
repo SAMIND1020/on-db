@@ -1,33 +1,18 @@
-export default class Group {
-    constructor({
-        id,
-        name,
-        description,
-        created_at,
-        updated_at,
-        events,
-        members,
-        createdAt,
-        updatedAt,
-    } = {}) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.events = events;
-        this.members = members;
-        this.created_at = createdAt || created_at;
-        this.updated_at = updatedAt || updated_at;
-    }
+import BaseModel from "./BaseModel";
 
-    toString() {
-        return `Name: ${this.name}\nDescription: ${this.description}\nInit Date: ${this.init_date}\nFinish Date: ${this.finish_date}\n...`;
-    }
+export default class Event extends BaseModel {
+    constructor(raw = {}) {
+        const data = {
+            ...raw,
+            created_at: raw.createdAt ?? raw.created_at,
+            updated_at: raw.updatedAt ?? raw.updated_at,
+        };
 
-    toJSON() {
-        return { ...this };
-    }
+        super(data);
 
-    getProperties() {
-        return Object.getOwnPropertyNames(this);
+        this.name = data.name;
+        this.description = data.description;
+        this.events = data.events;
+        this.members = data.members;
     }
 }
