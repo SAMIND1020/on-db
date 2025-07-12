@@ -5,14 +5,15 @@ import FormMap from "../../components/form/FormMap";
 import Alert from "../../components/general/Alert";
 
 import useCreatePersonForm from "../../hooks/form/useCreatePersonForm";
+
 import { useGetGroups } from "../../hooks/models/useGroups";
 import { useGetServices } from "../../hooks/models/useServices";
 import { useGetUsers } from "../../hooks/models/useUsers";
 import { useGlobalPageContext } from "../../contexts/PageContext";
 
-import { INPUT_TYPES, ID_TYPE_TYPES, MARITAL_STATUS_TYPES } from "../../types";
-
 import { usePostPerson } from "../../hooks/models/usePeople";
+
+import { INPUT_TYPES, ID_TYPE_TYPES, MARITAL_STATUS_TYPES } from "../../types";
 
 const defaultFormData = {
     name: "",

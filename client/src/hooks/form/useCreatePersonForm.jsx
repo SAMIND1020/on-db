@@ -11,7 +11,7 @@ import { usePutServices } from "../models/useServices";
 
 import Person from "../../models/Person";
 
-const useLoginForm = ({
+const useCreatePersonForm = ({
     formData,
     onSuccess = () => {},
     postData = () => {},
@@ -98,4 +98,4 @@ const useLoginForm = ({
     };
 };
 
-export default useLoginForm;
+export default useCreatePersonForm;

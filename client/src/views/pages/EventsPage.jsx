@@ -10,7 +10,7 @@ import EventModal from "../modals/EventModal";
 import { useGetEvents } from "../../hooks/models/useEvents";
 
 const EventsPage = () => {
-    const [activeModal, setActiveModal] = useState("create");
+    const [activeModal, setActiveModal] = useState();
     const [eventInfo, setEventInfo] = useState({});
 
     const { events } = useGetEvents();

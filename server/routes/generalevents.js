@@ -24,7 +24,7 @@ const middlewaresGeneralEvents = createMiddlewares({
     requiredMiddlewares: [
         () => check("name", "The name is required").not().isEmpty(),
         () => check("init_date", "The init_date is required").not().isEmpty(),
-        () => check("init_date", "The init_date must be a datetime with format 'YYYY-MM-DD HH:MM:SS'").isISO8601(),
+        () => check("init_date", "The init_date must be a datetime with format ISO8601").isISO8601(),
         () => check("finish_date", "The finish_date is required").not().isEmpty(),
         () => check("finish_date", "The finish_date must be a datetime with format 'YYYY-MM-DD HH:MM:SS'").isISO8601(),
     ],

@@ -7,14 +7,17 @@ const useAPIPost = ({ endpoint }) => {
 
     const [data, setData] = useState([]);
 
-    const postData = useCallback(async (body) => {
-        const res = await api.post(`${endpoint}`, body, {
-            validateToken: true,
-        });
-        
-        setData(res);
-        return res;
-    }, [api, endpoint]);
+    const postData = useCallback(
+        async (body) => {
+            const res = await api.post(endpoint, body, {
+                validateToken: true,
+            });
+
+            setData(res);
+            return res;
+        },
+        [api, endpoint]
+    );
 
     return { data, postData };
 };
